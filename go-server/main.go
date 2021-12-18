@@ -1,7 +1,6 @@
 package main
 
 import (
-	"fmt"
 	"github.com/gorilla/handlers"
 	"github.com/gorilla/mux"
 	"github.com/gorilla/websocket"
@@ -9,28 +8,13 @@ import (
 	"log"
 	"net/http"
 	"os"
+	"time"
 )
 
 var upgrader = websocket.Upgrader{
 	ReadBufferSize:  1024,
 	WriteBufferSize: 1024,
 	CheckOrigin:     func(r *http.Request) bool { return true },
-}
-
-func listen(conn *websocket.Conn) {
-	for {
-		_, p, err := conn.ReadMessage()
-
-		if err != nil {
-			if websocket.IsUnexpectedCloseError(err, websocket.CloseGoingAway) {
-				log.Println(err)
-			}
-			return
-		}
-
-		// just for preventing compile error
-		fmt.Println(string(p))
-	}
 }
 
 func main() {
@@ -40,6 +24,8 @@ func main() {
 	}
 
 	router := mux.NewRouter()
+	manager := NewClientManager()
+	go manager.start()
 
 	// endpoint for smoke test
 	router.HandleFunc("/hello", func(w http.ResponseWriter, r *http.Request) {
@@ -55,12 +41,14 @@ func main() {
 			log.Panic(err)
 		}
 
-		go listen(conn)
+		client := NewClient(time.Now().UnixMilli(), "Anonymous", conn, manager)
+		client.start()
 	})
 
 	headersOk := handlers.AllowedHeaders([]string{"X-Requested-With"})
 	originsOk := handlers.AllowedOrigins([]string{os.Getenv("WEB_SERVER_HOST")})
 	methodsOk := handlers.AllowedMethods([]string{"GET", "POST", "PUT", "DELETE"})
 
+	log.Println("Up and running")
 	log.Fatal(http.ListenAndServe(":"+os.Getenv("PORT"), handlers.CORS(headersOk, originsOk, methodsOk)(router)))
 }
