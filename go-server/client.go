@@ -38,7 +38,7 @@ func (c *Client) start() {
 	// read message from the client
 	go func() {
 		for {
-			message := &Message{}
+			message := new(Message)
 			err := c.conn.ReadJSON(message)
 
 			if err != nil {
