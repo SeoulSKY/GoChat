@@ -4,7 +4,7 @@ import './App.css';
 import env from "react-dotenv";
 
 
-let conn = new WebSocket("ws://" + env.GO_SERVER_HOST.replace("http://", "") + "/chat");
+let conn = new WebSocket("ws" + env.GO_SERVER_HOST.replace("http", "") + "/chat");
 
 
 function App() {
