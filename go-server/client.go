@@ -64,7 +64,12 @@ func (c *Client) start() {
 				err := c.conn.WriteJSON(message)
 
 				if err != nil {
-					log.Panicln(err)
+					if websocket.IsUnexpectedCloseError(err, websocket.CloseGoingAway, websocket.CloseAbnormalClosure) {
+						log.Println(err)
+					}
+
+					c.manager.remove <- c
+					return
 				}
 			}
 		}

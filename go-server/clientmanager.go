@@ -35,9 +35,6 @@ func (m ClientManager) start() {
 			}
 			m.clients[client.id] = client
 		case client := <-m.remove:
-			if _, found := m.clients[client.id]; !found {
-				log.Panicln("Client name \"" + strconv.FormatInt(client.id, 10) + "\" not found to remove")
-			}
 			delete(m.clients, client.id)
 		case message := <-m.broadcast:
 			for _, client := range m.clients {
