@@ -38,8 +38,8 @@ func (c *Client) start() {
 	// read message from the client
 	go func() {
 		for {
-			message := new(Chat)
-			err := c.conn.ReadJSON(message)
+			chat := new(Chat)
+			err := c.conn.ReadJSON(chat)
 
 			if err != nil {
 				if websocket.IsUnexpectedCloseError(err, websocket.CloseGoingAway, websocket.CloseAbnormalClosure) {
@@ -50,10 +50,10 @@ func (c *Client) start() {
 				return
 			}
 
-			message.Timestamp = time.Now()
-			log.Println(message.SenderName, "says:", message.Message)
+			chat.Timestamp = time.Now()
+			log.Println(chat.SenderName, "says:", chat.Message)
 
-			c.manager.broadcast <- message
+			c.manager.broadcast <- chat
 		}
 	}()
 

@@ -36,9 +36,9 @@ func (m ClientManager) start() {
 			m.clients[client.id] = client
 		case client := <-m.remove:
 			delete(m.clients, client.id)
-		case message := <-m.broadcast:
+		case chat := <-m.broadcast:
 			for _, client := range m.clients {
-				client.send <- message
+				client.send <- chat
 			}
 		}
 	}
