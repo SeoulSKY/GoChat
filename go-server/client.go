@@ -64,8 +64,8 @@ func (c *Client) start() {
 	go func() {
 		for {
 			select {
-			case message := <-c.send:
-				err := c.conn.WriteJSON(message)
+			case chat := <-c.send:
+				err := c.conn.WriteJSON(chat)
 
 				if err != nil {
 					if websocket.IsUnexpectedCloseError(err, websocket.CloseGoingAway, websocket.CloseAbnormalClosure) {
