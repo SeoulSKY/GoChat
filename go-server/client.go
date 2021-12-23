@@ -10,11 +10,11 @@ type Client struct {
 	id      int64
 	name    string
 	conn    *websocket.Conn
-	send    chan *Message
+	send    chan *Chat
 	manager *ClientManager
 }
 
-type Message struct {
+type Chat struct {
 	SenderName string    `json:"senderName"`
 	Message    string    `json:"message"`
 	Timestamp  time.Time `json:"timestamp"`
@@ -26,7 +26,7 @@ func NewClient(id int64, name string, conn *websocket.Conn, manager *ClientManag
 		id,
 		name,
 		conn,
-		make(chan *Message),
+		make(chan *Chat),
 		manager,
 	}
 }
@@ -38,7 +38,7 @@ func (c *Client) start() {
 	// read message from the client
 	go func() {
 		for {
-			message := new(Message)
+			message := new(Chat)
 			err := c.conn.ReadJSON(message)
 
 			if err != nil {

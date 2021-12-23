@@ -8,7 +8,7 @@ import (
 type ClientManager struct {
 	clients map[int64]*Client
 
-	broadcast chan *Message
+	broadcast chan *Chat
 
 	add chan *Client
 
@@ -19,7 +19,7 @@ type ClientManager struct {
 func NewClientManager() *ClientManager {
 	return &ClientManager{
 		make(map[int64]*Client),
-		make(chan *Message),
+		make(chan *Chat),
 		make(chan *Client),
 		make(chan *Client),
 	}
