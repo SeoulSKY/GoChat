@@ -51,6 +51,7 @@ func (c *Client) start() {
 			}
 
 			message.Timestamp = time.Now()
+			log.Println(message.SenderName, "says:", message.Message)
 
 			c.manager.broadcast <- message
 		}

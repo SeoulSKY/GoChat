@@ -1,45 +1,34 @@
-import React, {useEffect, useState} from 'react';
-import logo from './logo.svg';
 import './App.css';
 import env from "react-dotenv";
+import {
+    BrowserRouter,
+    Routes,
+    Route,
+    Navigate,
+} from "react-router-dom";
 
+import Profile from "./pages/Profile";
+import ChatRoom from "./pages/ChatRoom";
+import Cookies from "universal-cookie";
 
 let conn = new WebSocket("ws" + env.GO_SERVER_HOST.replace("http", "") + "/chat");
 
 
 function App() {
-  const [helloText, setHelloText] = useState("Connecting Go server...");
+    const cookies = new Cookies();
+    const hasName = cookies.get("name") !== undefined;
 
-  useEffect(() => {
-    fetch( env.GO_SERVER_HOST + "/hello")
-        .then(response => response.text())
-        .then(text => setHelloText(text))
-        .catch(err => {
-          console.log(err);
-          setHelloText("Failed to connect to Go server");
-        });
-
-      conn.onmessage = (e) => {
-          let json = JSON.parse(e.data)
-          console.log(json)
-      }
-  }, []);
-
-    function send() {
-        conn.send(JSON.stringify({senderName: "myName", message: "myMessage"}))
-    }
-
-  return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          {helloText}
-        </p>
-          <button onClick={send}>Send</button>
-      </header>
-    </div>
-  );
+    return (
+        <div className="App">
+            <BrowserRouter>
+                <Routes>
+                    <Route path={"/profile"} element={<Profile/>}/>
+                    <Route path={"/chatroom"} element={hasName ? <ChatRoom conn={conn}/> : <Navigate to={"/profile"}/>}/>
+                    <Route path={"/"} element={<Navigate to={"/chatroom"}/>}/>
+                </Routes>
+            </BrowserRouter>
+        </div>
+    );
 }
 
 export default App;
