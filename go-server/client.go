@@ -1,11 +1,13 @@
 package main
 
 import (
-	"github.com/gorilla/websocket"
 	"log"
 	"time"
+
+	"github.com/gorilla/websocket"
 )
 
+// Client contains info about a client
 type Client struct {
 	id      int64
 	name    string
@@ -14,13 +16,14 @@ type Client struct {
 	manager *ClientManager
 }
 
+// Chat contains info about a chat
 type Chat struct {
 	SenderName string    `json:"senderName"`
 	Message    string    `json:"message"`
 	Timestamp  time.Time `json:"timestamp"`
 }
 
-// NewClient New creates a new client
+// NewClient creates a new client
 func NewClient(id int64, name string, conn *websocket.Conn, manager *ClientManager) *Client {
 	return &Client{
 		id,

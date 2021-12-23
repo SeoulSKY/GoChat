@@ -2,9 +2,12 @@ import Button from "react-bootstrap/Button";
 import FormControl from "react-bootstrap/FormControl"
 import {useState} from "react";
 import Cookies from "universal-cookie";
-import {Conn} from "../pages/ChatRoom";
-import {InputGroup} from "react-bootstrap";
+import { InputGroup } from "react-bootstrap";
 
+
+interface Conn {
+    conn: WebSocket
+}
 
 export default function ChatInput({conn}: Conn) {
 
