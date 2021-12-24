@@ -33,7 +33,9 @@ func get(w http.ResponseWriter, r *http.Request) {
 
 func post(w http.ResponseWriter, r *http.Request) {
 	chat := new(models.Chat)
-	json.NewDecoder(r.Body).Decode(chat)
+	if err := json.NewDecoder(r.Body).Decode(chat); err != nil {
+		log.Panic(err)
+	}
 
 	mongo.GetInstance().Insert(chat)
 }
