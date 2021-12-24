@@ -28,7 +28,7 @@ func init() {
 func main() {
 	router := mux.NewRouter()
 	manager := NewClientManager()
-	go manager.start()
+	manager.start()
 
 	// endpoint for smoke test
 	router.HandleFunc("/hello", func(w http.ResponseWriter, r *http.Request) {
@@ -44,7 +44,7 @@ func main() {
 			log.Panic(err)
 		}
 
-		client := NewClient(time.Now().UnixNano(), "Anonymous", conn, manager)
+		client := NewClient(time.Now().UnixNano(), conn, manager)
 		client.start()
 	})
 
