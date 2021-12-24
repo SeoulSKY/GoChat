@@ -60,7 +60,7 @@ func (m *Mongo) Find() *[]models.Chat {
 		log.Panic(err)
 	}
 
-	var chats []models.Chat
+	chats := make([]models.Chat, 0)
 	if err := cursor.All(context.Background(), &chats); err != nil {
 		log.Panic(err)
 	}
