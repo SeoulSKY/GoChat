@@ -1,14 +1,16 @@
 package main
 
 import (
+	"log"
+	"main/routes"
+	"net/http"
+	"os"
+	"time"
+
 	"github.com/gorilla/handlers"
 	"github.com/gorilla/mux"
 	"github.com/gorilla/websocket"
 	"github.com/joho/godotenv"
-	"log"
-	"net/http"
-	"os"
-	"time"
 )
 
 var upgrader = websocket.Upgrader{
@@ -17,12 +19,13 @@ var upgrader = websocket.Upgrader{
 	CheckOrigin:     func(r *http.Request) bool { return true },
 }
 
-func main() {
-	err := godotenv.Load()
-	if err != nil {
+func init() {
+	if err := godotenv.Load(); err != nil {
 		log.Fatal("Failed to load .env file", err)
 	}
+}
 
+func main() {
 	router := mux.NewRouter()
 	manager := NewClientManager()
 	go manager.start()
@@ -35,15 +38,17 @@ func main() {
 		}
 	}).Methods("GET")
 
-	router.HandleFunc("/chat", func(w http.ResponseWriter, r *http.Request) {
+	router.HandleFunc("/ws", func(w http.ResponseWriter, r *http.Request) {
 		conn, err := upgrader.Upgrade(w, r, nil)
 		if err != nil {
 			log.Panic(err)
 		}
 
-		client := NewClient(time.Now().UnixMilli(), "Anonymous", conn, manager)
+		client := NewClient(time.Now().UnixNano(), "Anonymous", conn, manager)
 		client.start()
 	})
+
+	routes.AddRoutes(router)
 
 	headersOk := handlers.AllowedHeaders([]string{"X-Requested-With"})
 	originsOk := handlers.AllowedOrigins([]string{os.Getenv("WEB_SERVER_HOST")})

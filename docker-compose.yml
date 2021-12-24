@@ -5,11 +5,21 @@ services:
   go-server:
     build: go-server
     container_name: go-server
+    depends_on:
+      - mongoDB
     ports:
       - "5000:5000"
 
   web-server:
     build: web-server
     container_name: web-server
+    depends_on:
+      - go-server
     ports:
       - "8080:8080"
+
+  mongoDB:
+    image: mongo
+    container_name: mongoDB
+    ports:
+      - "27017:27017"

@@ -2,6 +2,8 @@ package main
 
 import (
 	"log"
+	"main/models"
+	"main/mongo"
 	"time"
 
 	"github.com/gorilla/websocket"
@@ -12,15 +14,8 @@ type Client struct {
 	id      int64
 	name    string
 	conn    *websocket.Conn
-	send    chan *Chat
+	send    chan *models.Chat
 	manager *ClientManager
-}
-
-// Chat contains info about a chat
-type Chat struct {
-	SenderName string    `json:"senderName"`
-	Message    string    `json:"message"`
-	Timestamp  time.Time `json:"timestamp"`
 }
 
 // NewClient creates a new client
@@ -29,7 +24,7 @@ func NewClient(id int64, name string, conn *websocket.Conn, manager *ClientManag
 		id,
 		name,
 		conn,
-		make(chan *Chat),
+		make(chan *models.Chat),
 		manager,
 	}
 }
@@ -41,7 +36,7 @@ func (c *Client) start() {
 	// read message from the client
 	go func() {
 		for {
-			chat := new(Chat)
+			chat := new(models.Chat)
 			err := c.conn.ReadJSON(chat)
 
 			if err != nil {
@@ -56,6 +51,9 @@ func (c *Client) start() {
 			chat.Timestamp = time.Now()
 			log.Println(chat.SenderName, "says:", chat.Message)
 
+			// add the chat to the database
+			mongo.GetInstance().Insert(chat)
+
 			c.manager.broadcast <- chat
 		}
 	}()
@@ -65,9 +63,7 @@ func (c *Client) start() {
 		for {
 			select {
 			case chat := <-c.send:
-				err := c.conn.WriteJSON(chat)
-
-				if err != nil {
+				if err := c.conn.WriteJSON(chat); err != nil {
 					if websocket.IsUnexpectedCloseError(err, websocket.CloseGoingAway, websocket.CloseAbnormalClosure) {
 						log.Println(err)
 					}

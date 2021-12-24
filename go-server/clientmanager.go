@@ -2,13 +2,15 @@ package main
 
 import (
 	"log"
+	"main/models"
 	"strconv"
 )
 
+// ClientManager manages clients
 type ClientManager struct {
 	clients map[int64]*Client
 
-	broadcast chan *Chat
+	broadcast chan *models.Chat
 
 	add chan *Client
 
@@ -19,7 +21,7 @@ type ClientManager struct {
 func NewClientManager() *ClientManager {
 	return &ClientManager{
 		make(map[int64]*Client),
-		make(chan *Chat),
+		make(chan *models.Chat),
 		make(chan *Client),
 		make(chan *Client),
 	}

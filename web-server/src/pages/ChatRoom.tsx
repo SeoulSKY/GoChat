@@ -8,7 +8,7 @@ import { cookies } from "../global";
 import Chat from "../components/Chat";
 import { Form } from "react-bootstrap";
 
-const conn = new WebSocket("ws" + env.GO_SERVER_HOST.replace("http", "") + "/chat");
+const conn = new WebSocket("ws" + env.GO_SERVER_HOST.replace("http", "") + "/ws");
 
 
 export interface ChatInterface {
