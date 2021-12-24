@@ -46,5 +46,4 @@ func (m ClientManager) start() {
 			}
 		}
 	}()
-
 }
