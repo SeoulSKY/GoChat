@@ -26,6 +26,8 @@ func init() {
 
 func get(w http.ResponseWriter, r *http.Request) {
 	chats := mongo.GetInstance().Find()
+
+	w.Header().Set("Content-Type", "application/json")
 	if err := json.NewEncoder(w).Encode(chats); err != nil {
 		log.Panic(err)
 	}
@@ -38,5 +40,6 @@ func post(w http.ResponseWriter, r *http.Request) {
 	}
 
 	mongo.GetInstance().Insert(chat)
-	w.WriteHeader(http.StatusOK)
+
+	w.WriteHeader(http.StatusCreated)
 }
