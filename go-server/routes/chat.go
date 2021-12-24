@@ -38,4 +38,5 @@ func post(w http.ResponseWriter, r *http.Request) {
 	}
 
 	mongo.GetInstance().Insert(chat)
+	w.WriteHeader(http.StatusOK)
 }
