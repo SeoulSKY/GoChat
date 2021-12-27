@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import env from "react-dotenv";
 import InputGroup from "react-bootstrap/InputGroup";
 import FormControl from "react-bootstrap/FormControl";
@@ -17,20 +17,21 @@ export interface ChatInterface {
     timestamp: string,
 }
 
-let chat = {
-    senderName: "SeoulSKY",
-    message: "myMessage",
-    timestamp: new Date().toString()
-}
-
-
 export default function ChatRoom() {
     const name = cookies.get("name");
     if (name === undefined) {
         throw new Error("Cookie \"name\" is not present");
     }
 
-    const [chats, setChats] = useState<ChatInterface[]>([chat, chat, chat, chat, chat, chat]);
+    const [chats, setChats] = useState<ChatInterface[]>([]);
+
+    // GET existing chats
+    useEffect(() => {
+        fetch(env.GO_SERVER_HOST + "/chat")
+            .then(response => response.json())
+            .then(chats => setChats(chats))
+            .catch(err => console.log(err));
+    }, [])
 
     // listen messages from go server
     conn.onmessage = e => {
