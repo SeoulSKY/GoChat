@@ -9,6 +9,7 @@ import {
 import Profile from "./pages/Profile";
 import ChatRoom from "./pages/ChatRoom";
 import { cookies } from "./global";
+import NavBar from './components/NavBar';
 
 
 function App() {
@@ -17,6 +18,7 @@ function App() {
     return (
         <div className="App">
             <BrowserRouter>
+                <NavBar/>
                 <Routes>
                     <Route path={"/profile"} element={<Profile />} />
                     <Route path={"/chatroom"} element={hasName ? <ChatRoom/> : <Navigate to={"/profile"} />} />

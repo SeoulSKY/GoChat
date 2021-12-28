@@ -6,7 +6,7 @@ import Button from "react-bootstrap/Button";
 import Container from "react-bootstrap/Container";
 import { cookies } from "../global";
 import Chat from "../components/Chat";
-import { Form } from "react-bootstrap";
+import Form from "react-bootstrap/Form";
 
 const conn = new WebSocket("ws" + env.GO_SERVER_HOST.replace("http", "") + "/ws");
 
@@ -61,32 +61,36 @@ export default function ChatRoom() {
 
     return (
         <>
-            <Container fluid style={{ position: "absolute", height: "93%", width: "99%", overflowY: "scroll", margin: "10px" }}>
-                {chats.map((chat, index) => {
-                    return (
-                        <div key={index}>
-                            <Chat senderName={chat.senderName} message={chat.message} timestamp={chat.timestamp}/>
-                            <br />
-                        </div>
-                    )
-                })}
+            <Container>
+                <div style={{ position: "absolute", minWidth: "71%", top: "7%", bottom: "7%", overflowY: "auto", backgroundColor: "#85929E"}}>
+                    {chats.map((chat, index) => {
+                        // align the chat based on the sender name
+                        const justifyContent = chat.senderName === name ? "right" : "left";
+
+                        return (
+                            <div key={index} style={{ display: "flex", justifyContent: justifyContent, margin: "20px" }}>
+                                <Chat senderName={chat.senderName} message={chat.message} timestamp={chat.timestamp} />
+                            </div>
+                        )
+                    })}
+                </div>
+
+                <div style={{ position: "absolute", minWidth: "71%", bottom: "0px", marginTop: "10px", marginBottom: "10px" }}>
+                    <Form onSubmit={onSubmit}>
+                        <InputGroup>
+                            <FormControl
+                                value={input}
+                                onChange={e => setInput(e.target.value)}
+                                placeholder="Type your message here..."
+                                required
+                            />
+                            <Button variant="primary" type="submit">
+                                Send
+                            </Button>
+                        </InputGroup>
+                    </Form>
+                </div>
             </Container>
-
-            <br />
-
-            <Form onSubmit={onSubmit}>
-                <InputGroup style={{ position: "absolute", bottom: "0px", margin: "10px", width: "99%" }}>
-                    <FormControl
-                        placeholder="Type your message here..."
-                        value={input}
-                        onChange={e => setInput(e.target.value)}
-                        required
-                    />
-                    <Button variant="primary" type="submit">
-                        Send
-                    </Button>
-                </InputGroup>
-            </Form>
         </>
     )
 }

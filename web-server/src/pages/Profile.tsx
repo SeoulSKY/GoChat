@@ -1,11 +1,11 @@
 import FormControl from "react-bootstrap/FormControl";
 import Button from "react-bootstrap/Button";
-import Cookies from "universal-cookie";
 import {useState} from "react";
 import Card from "react-bootstrap/Card";
 
+import { cookies } from "../global"
+
 export default function Profile() {
-    const cookies = new Cookies();
     const [input, setInput] = useState("");
 
     const [name, setName] = useState<string>(cookies.get("name"));
