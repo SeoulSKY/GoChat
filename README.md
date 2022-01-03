@@ -15,7 +15,7 @@ When it is ready, visit [here](http://localhost:8080)
 ## Architecture
 ![architecture](https://user-images.githubusercontent.com/48105703/147528514-619615f9-378a-4174-ab1a-ef13129e3631.png)
 
-`Go` server and `React` server communicate via WebSocket. In addition, `Go` server provides an endpoint to get all existing chats in the database.
+`Go` server and `React` server communicate via WebSocket. In addition, `Go` server provides a REST API to get all existing chats in the database.
 
 ## Notes
 This application uses cookies to distinguish different users. To try this application using multiple users, please use multiple browsers.
