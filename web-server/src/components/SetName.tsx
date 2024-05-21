@@ -2,9 +2,9 @@ import FormControl from "react-bootstrap/FormControl";
 import Button from "react-bootstrap/Button";
 import React, { useState } from "react";
 import Card from "react-bootstrap/Card";
-import Form from "react-bootstrap/Form"
+import Form from "react-bootstrap/Form";
 
-import { cookies } from "../global"
+import { cookies } from "../global";
 
 export interface SetNameProps {
     /**
@@ -22,49 +22,49 @@ export interface SetNameProps {
  * This component sets the name of the current user
  */
 export default function SetName({ editing, cb }: SetNameProps) {
-    const [input, setInput] = useState("");
+  const [input, setInput] = useState("");
 
-    const [name, setName] = useState<string>(cookies.get("name"));
+  const [name, setName] = useState<string>(cookies.get("name"));
 
-    function onSubmit(e: React.FormEvent) {
-        e.preventDefault();
+  function onSubmit(e: React.FormEvent) {
+    e.preventDefault();
 
-        cookies.set("name", input);
-        setName(input);
+    cookies.set("name", input);
+    setName(input);
 
-        setInput("");
+    setInput("");
 
-        if (cb) {
-            cb();
-        }
+    if (cb) {
+      cb();
     }
+  }
 
-    const title = editing ? "Edit Your Name" : "Decide Your Name";
-    const placeholder = editing ? "Enter your new name" : "Enter your name";
+  const title = editing ? "Edit Your Name" : "Decide Your Name";
+  const placeholder = editing ? "Enter your new name" : "Enter your name";
 
-    return (
-        <>
-            <Form onSubmit={onSubmit}>
-                <Card>
-                    <Card.Header as={"h5"}>
-                        {"Your Name: " + name}
-                    </Card.Header>
-                    <Card.Body>
-                        <Card.Title>{title}</Card.Title>
-                        <FormControl
-                            placeholder={placeholder}
-                            value={input}
-                            onChange={e => setInput(e.target.value)}
-                            required
-                        />
-                    </Card.Body>
-                    <Card.Footer>
-                        <Button variant="primary" type="submit">
+  return (
+    <>
+      <Form onSubmit={onSubmit}>
+        <Card>
+          <Card.Header as={"h5"}>
+            {"Your Name: " + name}
+          </Card.Header>
+          <Card.Body>
+            <Card.Title>{title}</Card.Title>
+            <FormControl
+              placeholder={placeholder}
+              value={input}
+              onChange={e => setInput(e.target.value)}
+              required
+            />
+          </Card.Body>
+          <Card.Footer>
+            <Button variant="primary" type="submit">
                             Submit
-                        </Button>
-                    </Card.Footer>
-                </Card>
-            </Form>
-        </>
-    )
+            </Button>
+          </Card.Footer>
+        </Card>
+      </Form>
+    </>
+  );
 }
