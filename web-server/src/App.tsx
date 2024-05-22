@@ -1,4 +1,3 @@
-import "./App.css";
 import {
   BrowserRouter,
   Routes,
@@ -8,7 +7,7 @@ import {
 
 import Profile from "./pages/Profile";
 import ChatRoom from "./pages/ChatRoom";
-import { cookies } from "./global";
+import { cookies } from "./globals.ts";
 import NavBar from "./components/NavBar";
 import Home from "./pages/Home";
 
@@ -20,8 +19,8 @@ export default function App() {
     <BrowserRouter>
       <NavBar/>
       <Routes>
-        {/*<Route path={"/profile"} element={hasName ? <Profile /> : <Navigate to={"/"} />} />*/}
-        {/*<Route path={"/chatroom"} element={hasName ? <ChatRoom/> : <Navigate to={"/"} />} />*/}
+        <Route path={"/profile"} element={hasName ? <Profile /> : <Navigate to={"/"} />} />
+        <Route path={"/chatroom"} element={hasName ? <ChatRoom/> : <Navigate to={"/"} />} />
         <Route path={"/"} element={<Home />} />
       </Routes>
     </BrowserRouter>

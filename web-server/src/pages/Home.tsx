@@ -1,7 +1,7 @@
 import Container from "react-bootstrap/Container";
 import Button from "react-bootstrap/Button";
 import SetName from "../components/SetName";
-import { cookies } from "../global";
+import { cookies } from "../globals.ts";
 import Image from "react-bootstrap/Image";
 
 function nameExists() {

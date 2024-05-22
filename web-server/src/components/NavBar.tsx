@@ -1,7 +1,7 @@
 import Navbar from "react-bootstrap/Navbar";
 import Container from "react-bootstrap/Container";
 import Nav from "react-bootstrap/Nav";
-import { cookies } from "../global";
+import { cookies } from "../globals.ts";
 
 export default function NavBar() {
   const hasName = cookies.get("name") !== undefined;

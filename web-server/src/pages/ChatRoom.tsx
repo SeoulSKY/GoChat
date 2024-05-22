@@ -4,12 +4,13 @@ import InputGroup from "react-bootstrap/InputGroup";
 import FormControl from "react-bootstrap/FormControl";
 import Button from "react-bootstrap/Button";
 import Container from "react-bootstrap/Container";
-import { cookies } from "../global";
+import { cookies } from "../globals.ts";
 import Chat from "../components/Chat";
 import Form from "react-bootstrap/Form";
 import Alert from "react-bootstrap/Alert";
+import {SERVER_HOST} from "../constants.ts";
 
-const conn = new WebSocket("ws" + env.GO_SERVER_HOST.replace("http", "") + "/ws");
+const conn = new WebSocket("ws" + SERVER_HOST + "/ws");
 
 
 export interface ChatInterface {
