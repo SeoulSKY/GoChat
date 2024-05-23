@@ -72,7 +72,7 @@ export default function Home() {
       </div>
 
       <div className={`flex flex-col justify-center ${marginY}`}>
-        <h1 className={`text-center ${styles.title}`}>Why Use GoChat?</h1>
+        <h1 className={`text-center ${styles.title}`}>{`Why Use ${APP_NAME}?`}</h1>
         <h3 className={`text-center ${styles.description}`}>
           {`Explore below to see why ${APP_NAME} is a simple and powerful messaging platform.`}
         </h3>

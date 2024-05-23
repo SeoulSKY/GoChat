@@ -2,23 +2,27 @@ import Cookies from "js-cookie";
 
 const key = "user";
 
-interface User {
+export interface User {
   name: string,
 }
 
-export function hasUser(): boolean {
-  return Cookies.get(key) !== undefined;
-}
-
-export function getUser(): User | null {
-  const author = Cookies.get(key);
-  if (author === undefined) {
+/**
+ * Get the user from the cookie
+ * @returns The user object or null if the user is not found
+ */
+export function getUser(): User {
+  const user = Cookies.get(key);
+  if (user === undefined) {
     return null;
   }
 
-  return JSON.parse(author) as User;
+  return JSON.parse(user) as User;
 }
 
-export function setUser(author: User) {
-  Cookies.set(key, JSON.stringify(author));
+/**
+ * Set the user in the cookie
+ * @param user The user object
+ */
+export function setUser(user: User) {
+  Cookies.set(key, JSON.stringify(user));
 }

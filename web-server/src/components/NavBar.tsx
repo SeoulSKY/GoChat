@@ -1,27 +1,29 @@
-import Navbar from "react-bootstrap/Navbar";
-import Container from "react-bootstrap/Container";
-import Nav from "react-bootstrap/Nav";
-import {getUser} from "../utils/user.ts";
+import {APP_NAME} from "../constants.ts";
+import {paddingX} from "../styles.ts";
+import {Link} from "react-router-dom";
+import {useContext} from "react";
+import {UserContext} from "../utils/contexts.ts";
+
+const styles = {
+  navElement: "px-3 font-semibold hover:text-primary",
+}
 
 export default function NavBar() {
-  const name = getUser()?.name;
+  const [user] = useContext(UserContext);
+  const name = user?.name;
 
   return (
-    <>
-      <Navbar bg="dark" variant="dark">
-        <Container>
-          <Navbar.Brand href="/">Go Chat</Navbar.Brand>
-          <Nav className="me-auto">
-            {name && <Nav.Link href="/chatroom">Chat Room</Nav.Link>}
-            {name && <Nav.Link href="/profile">Profile</Nav.Link>}
-          </Nav>
-          <Navbar.Collapse className="justify-content-end">
-            <Navbar.Text>
-                            Your Name: <a href="/profile">{name}</a>
-            </Navbar.Text>
-          </Navbar.Collapse>
-        </Container>
-      </Navbar>
-    </>
+    <nav className={"flex flex-row justify-between items-center sticky top-0 w-full bg-white border-b " +
+      `border-gray-400 ${paddingX}`}
+    >
+      <div className={"flex justify-start items-center"}>
+        <Link to={"/"} className={"font-bold text-3xl py-5 pr-5 hob"}>{APP_NAME}</Link>
+        <Link to={"/chat"} className={styles.navElement}>Chat Room</Link>
+        <Link to={"/profile"} className={styles.navElement}>Profile</Link>
+      </div>
+      <div className="flex justify-end">
+        {name && <Link to={"/profile"} className={"font-semibold"}>Hi, SeoulSKY</Link>}
+      </div>
+    </nav>
   );
 }
