@@ -21,13 +21,13 @@ var upgrader = websocket.Upgrader{
 }
 
 func main() {
-	router := mux.NewRouter()
+	router := mux.NewRouter().PathPrefix("/api").Subrouter()
 	manager := NewClientManager()
 	manager.start()
 
 	// endpoint for smoke test
-	router.HandleFunc("/hello", func(w http.ResponseWriter, r *http.Request) {
-		_, err := w.Write([]byte("Hello From Go"))
+	router.HandleFunc("/helloworld", func(w http.ResponseWriter, r *http.Request) {
+		_, err := w.Write([]byte("Hello World!"))
 		if err != nil {
 			log.Panic(err)
 		}
@@ -46,9 +46,9 @@ func main() {
 	routes.AddRoutes(router)
 
 	headersOk := handlers.AllowedHeaders([]string{"X-Requested-With"})
-	originsOk := handlers.AllowedOrigins([]string{"localhost", "gochat.seoulsky.org"})
+	originsOk := handlers.AllowedOrigins([]string{"http://localhost:5173", "http://localhost:5000", "https://gochat.seoulsky.org"})
 	methodsOk := handlers.AllowedMethods([]string{"GET", "POST", "PUT", "DELETE"})
 
-	log.Println("Up and running")
+	log.Printf("Running at localhost:%d\n", PORT)
 	log.Fatal(http.ListenAndServe(":"+strconv.Itoa(PORT), handlers.CORS(headersOk, originsOk, methodsOk)(router)))
 }

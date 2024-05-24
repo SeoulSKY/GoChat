@@ -1,17 +1,30 @@
-import React, { useState, useEffect, useRef } from "react";
-import env from "react-dotenv";
+import React, {useContext, useEffect, useRef, useState} from "react";
 import {SERVER_HOST} from "../constants.ts";
 import {paddingX} from "../styles.ts";
-import { format, isSameDay, isSameMinute, isYesterday, isThisWeek, isThisYear } from "date-fns";
-import { BsArrowUpCircleFill } from "react-icons/bs";
-
-// const socket = new WebSocket("ws" + SERVER_HOST + "/ws");
-
+import {format, isSameDay, isSameMinute, isThisWeek, isThisYear, isToday, isYesterday} from "date-fns";
+import {BsArrowUpCircleFill} from "react-icons/bs";
+import useWebSocket, {ReadyState} from "react-use-websocket";
+import {toast} from "react-toastify";
+import useSize from "../hooks/useSize.ts";
+import {NavContext} from "../utils/contexts.ts";
+import useWindowSize from "../hooks/useWindowSize.ts";
 
 export interface Message {
   senderName: string,
-  message: string,
+  text: string,
   timestamp: Date,
+}
+
+function parseMessage(json: object): Message {
+  return {
+    senderName: json["senderName"],
+    text: json["text"],
+    timestamp: new Date(json["timestamp"]),
+  };
+}
+
+function scrollToBottom() {
+  window.scrollTo({top: document.body.scrollHeight, behavior: "smooth"});
 }
 
 enum Alignment {
@@ -75,7 +88,7 @@ function MessageBubble({message, alignment, position}: MessageBubbleProps) {
           {message.senderName}
         </p>
       }
-      <p className={`${textColor} text-lg`}>{message.message}</p>
+      <p className={`${textColor} text-lg break-words`}>{message.text}</p>
       {[Position.BOTTOM, Position.SINGLE].includes(position) &&
         <p
           className={`${timestampColor} self-end text-xs`}>
@@ -117,8 +130,6 @@ interface MessageListProps {
 }
 
 function MessageList({messages}: MessageListProps) {
-  const now = new Date();
-
   function splitMessages(messages: Message[], predicate: (left: Message, right: Message) => boolean): Message[][] {
     const groups: Message[][] = [];
     let currentGroup: Message[] = [messages[0]];
@@ -137,7 +148,7 @@ function MessageList({messages}: MessageListProps) {
   }
 
   function formatDateFromNow(date: Date) {
-    if (isSameDay(date, now)) {
+    if (isToday(date)) {
       return "Today";
     }
     if (isYesterday(date)) {
@@ -153,7 +164,7 @@ function MessageList({messages}: MessageListProps) {
   }
 
   if (messages.length === 0) {
-    return <div>Start conversation</div>
+    return <p className={"text-4xl"}>Start conversation</p>
   }
 
   const messageGroupByDate = splitMessages(messages, (left, right) => !isSameDay(left.timestamp, right.timestamp))
@@ -165,7 +176,7 @@ function MessageList({messages}: MessageListProps) {
     );
 
   return (
-    <div className={"flex flex-col"}>
+    <div>
       {messages && messageGroupByDate.map((groupByDate) => {
         return (
           <div className={"flex flex-col my-5"}>
@@ -183,76 +194,69 @@ function MessageList({messages}: MessageListProps) {
   );
 }
 
+
 export default function ChatRoom() {
+  const windowHeight = useWindowSize().height;
+
+  const navRef = useContext(NavContext);
+  const inputRef = useRef<HTMLInputElement>(null);
+
+  const { sendMessage, lastMessage, readyState } = useWebSocket(SERVER_HOST.replace("http", "ws") + "/api/ws");
   const [messages, setMessages] = useState<Message[]>([]);
   const [input, setInput] = useState("");
-  const [error, setError] = useState("");
+  const navHeight = useSize(navRef).height;
+  const inputHeight = useSize(inputRef).height;
 
   useEffect(() => {
-    setMessages([
-      {
-        senderName: "SeoulSKY",
-        message: "Hello, world!",
-        timestamp: new Date("2021-09-01T00:00:00Z"),
-      },
-      {
-        senderName: "Test",
-        message: "How are you?",
-        timestamp: new Date("2024-03-02T00:00:00Z"),
-      },
-      {
-        senderName: "Test",
-        message: "How are you?",
-        timestamp: new Date("2024-03-02T00:00:01Z"),
-      },
-      {
-        senderName: "Test",
-        message: "How are you?",
-        timestamp: new Date("2024-03-02T00:00:01Z"),
-      },
-      {
-        senderName: "Test",
-        message: "How are you?",
-        timestamp: new Date("2024-03-02T00:00:01Z"),
-      },
-      {
-        senderName: "Test",
-        message: "How are you?",
-        timestamp: new Date("2024-03-02T00:00:01Z"),
-      },
-      {
-        senderName: "Test",
-        message: "How are you?",
-        timestamp: new Date("2024-03-02T00:00:01Z"),
-      },
-      {
-        senderName: "Test",
-        message: "How are you?",
-        timestamp: new Date("2024-03-02T00:00:01Z"),
-      },
-      {
-        senderName: "Test",
-        message: "How are you?",
-        timestamp: new Date("2024-03-02T00:00:01Z"),
-      },
-      {
-        senderName: "SeoulSKY",
-        message: "I'm fine, thank you uuuuuuuuuuuuuuuuuu !",
-        timestamp: new Date("2024-03-02T00:00:00Z"),
-      },
-    ]);
+    (async () => {
+      try {
+        const response = await fetch(SERVER_HOST + "/api/chat");
+        if (!response.ok) {
+          toast.error("Could not load messages. Please try again later.")
+          console.log(response.status, response.statusText);
+          return;
+        }
+
+        const json = await response.json();
+
+        setMessages(json.map(parseMessage));
+      } catch (e) {
+        toast.error("Could not load messages. Please try again later.")
+        console.error(e);
+      }
+    })();
   }, []);
 
   useEffect(() => {
-    window.scrollTo({top: document.body.scrollHeight, behavior: "smooth"});
-  }, [messages])
+    if (!lastMessage) {
+      return;
+    }
+
+    setMessages((values: Message[]) => [
+      ...values,
+      parseMessage(JSON.parse(lastMessage.data)),
+    ]);
+  },[lastMessage]);
+
+  useEffect(() => {
+    if (readyState === ReadyState.CLOSED && lastMessage) {
+      toast.error("Disconnected from the server. Try refreshing the page.");
+    }
+  }, [readyState]);
+
+  useEffect(scrollToBottom, [messages]);
 
   return (
-    <div>
-      <div className={paddingX}>
-        <MessageList messages={messages}/>
+    <div className={"flex flex-col"}>
+      <div
+        className={`flex overflow-scroll justify-center items-center ${paddingX}`}
+        style={{height: windowHeight - navHeight - inputHeight}}>
+          <MessageList messages={messages} />
       </div>
-      <div className={`flex flex-row w-full sticky bottom-0 border-t border-gray-400 bg-white py-3 ${paddingX}`}>
+      <div
+        ref={inputRef}
+        className={`absolute bottom-0 flex flex-row w-full border-t border-gray-400 bg-white py-3 z-50 ${paddingX}`}
+      >
         <input
           className={`${bubbleTextColor[Alignment.LEFT]} ${bubbleBackgroundColor[Alignment.LEFT]} focus:outline-none 
           text-lg w-full px-6 py-2 rounded-3xl placeholder:italic placeholder-gray-600`}
@@ -261,79 +265,20 @@ export default function ChatRoom() {
           placeholder={"Message"}
         />
         {input.trim() && <button
-          className={"ml-4 text-4xl text-primary"}
+          className={"ml-4 text-4xl text-primary disabled:opacity-50"}
+          disabled={readyState !== ReadyState.OPEN}
           onClick={() => {
-            setMessages((values: Message[]) => [
-              ...values,
-              {
-                senderName: "SeoulSKY",
-                message: input,
-                timestamp: new Date(),
-              }
-            ]);
+            sendMessage(JSON.stringify({
+              senderName: "SeoulSKY",
+              text: input,
+              timestamp: new Date().toISOString(),
+            }));
             setInput("");
           }}
         >
-          <BsArrowUpCircleFill />
+          <BsArrowUpCircleFill/>
         </button>}
       </div>
     </div>
   );
-
-  // // automatically scroll to the bottom of the chats
-  // const chatRef = useRef<null | HTMLDivElement>(null);
-  // useEffect(() => {
-  //   if (chatRef.current) {
-  //     chatRef.current.scrollIntoView({ behavior: "smooth", block: "end", inline: "nearest" });
-  //   }
-  // }, [chats]);
-
-  // GET existing chats
-  // useEffect(() => {
-  //   fetch(env.GO_SERVER_HOST + "/chat")
-  //     .then(response => response.json())
-  //     .then(chats => {
-  //       setTimestamps(chats);
-  //       setChats(chats);
-  //     })
-  //     .catch(err => {
-  //       setError("An error has been occurred");
-  //       console.log(err);
-  //     });
-  // }, []);
-
-  // listen messages from go server
-  // socket.onmessage = e => {
-  //   const clonedArray = [...chats];
-  //
-  //   const chat: Message = JSON.parse(e.data);
-  //   setTimestamps([chat]);
-  //
-  //   clonedArray.push(chat);
-  //   setChats(clonedArray);
-  // };
-  //
-  // // handle other socket events
-  // socket.onopen = () => setError("");
-  // socket.onclose = e => {
-  //   setError("Connection to go server has been closed");
-  //   console.log(e.reason);
-  // };
-
-  // /**
-  //    * Send a message to go server
-  //    * @param e event
-  //    */
-  // function onSubmit(e: React.FormEvent) {
-  //   e.preventDefault();
-  //
-  //   const json = {
-  //     senderName: name,
-  //     message: input
-  //   };
-  //
-  //   socket.send(JSON.stringify(json));
-  //
-  //   setInput("");
-  // }
 }

@@ -6,7 +6,7 @@ import (
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
 	"log"
-	"main/models"
+	"main/message"
 )
 
 // Mongo is a wrapper for the mongo database
@@ -19,7 +19,7 @@ var instance *Mongo
 
 func init() {
 
-	client, err := mongo.NewClient(options.Client().ApplyURI("mongodb://mongoDB:27017"))
+	client, err := mongo.NewClient(options.Client().ApplyURI("mongodb://mongo:27017"))
 	if err != nil {
 		log.Panic(err)
 	}
@@ -40,24 +40,24 @@ func GetInstance() *Mongo {
 }
 
 // Insert inserts the given chat to the database
-func (m *Mongo) Insert(chat *models.Chat) {
-	_, err := m.chat.InsertOne(context.Background(), chat)
+func (m *Mongo) Insert(message *message.Message) {
+	_, err := m.chat.InsertOne(context.Background(), message)
 	if err != nil {
 		log.Panic(err)
 	}
 }
 
 // Find finds existing chats from the database
-func (m *Mongo) Find() *[]models.Chat {
+func (m *Mongo) Find() *[]message.Message {
 	cursor, err := m.chat.Find(context.Background(), bson.D{})
 	if err != nil {
 		log.Panic(err)
 	}
 
-	chats := make([]models.Chat, 0)
-	if err := cursor.All(context.Background(), &chats); err != nil {
+	messages := make([]message.Message, 0)
+	if err := cursor.All(context.Background(), &messages); err != nil {
 		log.Panic(err)
 	}
 
-	return &chats
+	return &messages
 }

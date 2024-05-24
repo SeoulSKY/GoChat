@@ -2,7 +2,7 @@ package main
 
 import (
 	"log"
-	"main/models"
+	"main/message"
 	"strconv"
 )
 
@@ -10,7 +10,7 @@ import (
 type ClientManager struct {
 	clients map[int64]*Client
 
-	broadcast chan *models.Chat
+	broadcast chan *message.Message
 
 	add chan *Client
 
@@ -21,7 +21,7 @@ type ClientManager struct {
 func NewClientManager() *ClientManager {
 	return &ClientManager{
 		make(map[int64]*Client),
-		make(chan *models.Chat),
+		make(chan *message.Message),
 		make(chan *Client),
 		make(chan *Client),
 	}
@@ -39,9 +39,9 @@ func (m ClientManager) start() {
 				m.clients[client.id] = client
 			case client := <-m.remove:
 				delete(m.clients, client.id)
-			case chat := <-m.broadcast:
+			case message := <-m.broadcast:
 				for _, client := range m.clients {
-					client.send <- chat
+					client.send <- message
 				}
 			}
 		}

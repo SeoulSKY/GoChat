@@ -1,19 +1,19 @@
 import {APP_NAME} from "../constants.ts";
 import {paddingX} from "../styles.ts";
 import {Link} from "react-router-dom";
-import {useContext} from "react";
+import {forwardRef, RefObject, useContext} from "react";
 import {UserContext} from "../utils/contexts.ts";
 
 const styles = {
   navElement: "px-3 font-semibold hover:text-primary",
 };
 
-export default function NavBar() {
+const NavBar = forwardRef((_props, ref: RefObject<HTMLElement>) =>{
   const [user] = useContext(UserContext);
   const name = user?.name;
 
   return (
-    <nav className={"flex flex-row justify-between items-center sticky top-0 w-full bg-white border-b " +
+    <nav ref={ref} className={"flex flex-row justify-between items-center sticky top-0 w-full bg-white border-b " +
       `border-gray-400 ${paddingX}`}
     >
       <div className={"flex justify-start items-center"}>
@@ -26,4 +26,6 @@ export default function NavBar() {
       </div>
     </nav>
   );
-}
+});
+
+export default NavBar;

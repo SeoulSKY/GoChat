@@ -1,4 +1,4 @@
-import React, {useState} from "react";
+import React, {useEffect, useRef, useState} from "react";
 import ReactDOM from "react-dom/client";
 import "./index.css";
 import {createBrowserRouter, Outlet, RouterProvider} from "react-router-dom";
@@ -6,8 +6,10 @@ import Home from "./pages/Home.tsx";
 import ChatRoom from "./pages/ChatRoom.tsx";
 import Profile from "./pages/Profile.tsx";
 import NavBar from "./components/NavBar.tsx";
-import {UserContext} from "./utils/contexts.ts";
+import {NavContext, UserContext} from "./utils/contexts.ts";
 import {getUser, setUser as updateUser, User} from "./utils/user.ts";
+import {Bounce, ToastContainer} from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 const router = createBrowserRouter([
   {
@@ -32,14 +34,25 @@ const router = createBrowserRouter([
 
 function Layout() {
   const [user, setUser] = useState<User>(getUser());
+  const navRef = useRef<HTMLElement>(null);
+  const [isNavMounted, setIsNavMounted] = useState(false);
+
+  useEffect(() => {
+    if (navRef.current) {
+      setIsNavMounted(true);
+    }
+  }, [navRef.current]);
 
   return (
     <UserContext.Provider value={[user, (value: User) => {
       updateUser(value);
       setUser(value);
     }]}>
-      <NavBar />
-      <Outlet />
+      <NavContext.Provider value={navRef}>
+        <NavBar ref={navRef}/>
+        {isNavMounted && <Outlet />}
+        <ToastContainer transition={Bounce} />
+      </NavContext.Provider>
     </UserContext.Provider>
   );
 }

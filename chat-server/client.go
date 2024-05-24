@@ -1,19 +1,18 @@
 package main
 
 import (
+	"github.com/gorilla/websocket"
 	"log"
-	"main/models"
+	"main/message"
 	"main/mongo"
 	"time"
-
-	"github.com/gorilla/websocket"
 )
 
 // Client contains info about a client
 type Client struct {
 	id      int64
 	conn    *websocket.Conn
-	send    chan *models.Chat
+	send    chan *message.Message
 	manager *ClientManager
 }
 
@@ -22,7 +21,7 @@ func NewClient(id int64, conn *websocket.Conn, manager *ClientManager) *Client {
 	return &Client{
 		id,
 		conn,
-		make(chan *models.Chat),
+		make(chan *message.Message),
 		manager,
 	}
 }
@@ -34,8 +33,8 @@ func (c *Client) start() {
 	// read message from the client
 	go func() {
 		for {
-			chat := new(models.Chat)
-			if err := c.conn.ReadJSON(chat); err != nil {
+			message := new(message.Message)
+			if err := c.conn.ReadJSON(message); err != nil {
 				if websocket.IsUnexpectedCloseError(err, websocket.CloseGoingAway, websocket.CloseAbnormalClosure) {
 					log.Println(err)
 				}
@@ -44,13 +43,13 @@ func (c *Client) start() {
 				return
 			}
 
-			chat.Timestamp = time.Now()
-			log.Println(chat.SenderName, "says:", chat.Message)
+			message.Timestamp = time.Now()
+			log.Println(message.SenderName, "says:", message.Text)
 
-			// add the chat to the database
-			mongo.GetInstance().Insert(chat)
+			// add the message to the database
+			mongo.GetInstance().Insert(message)
 
-			c.manager.broadcast <- chat
+			c.manager.broadcast <- message
 		}
 	}()
 
@@ -58,8 +57,8 @@ func (c *Client) start() {
 	go func() {
 		for {
 			select {
-			case chat := <-c.send:
-				if err := c.conn.WriteJSON(chat); err != nil {
+			case message := <-c.send:
+				if err := c.conn.WriteJSON(message); err != nil {
 					if websocket.IsUnexpectedCloseError(err, websocket.CloseGoingAway, websocket.CloseAbnormalClosure) {
 						log.Println(err)
 					}
