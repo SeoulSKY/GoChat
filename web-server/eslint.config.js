@@ -1,4 +1,6 @@
 // @ts-check
+/* eslint-disable @typescript-eslint/naming-convention */
+
 import stylistic from "@stylistic/eslint-plugin";
 
 import eslint from "@eslint/js";
@@ -28,7 +30,38 @@ export default tseslint.config(
       "no-unused-vars": [
         "error",
         {
+          argsIgnorePattern: "^_",
           varsIgnorePattern: "^_"
+        }
+      ],
+      "@typescript-eslint/naming-convention": [
+        "error",
+        {
+          selector: "parameter",
+          format: ["camelCase"],
+          leadingUnderscore: "allow"
+        },
+        {
+          selector: "memberLike",
+          format: ["camelCase"],
+          leadingUnderscore: "allow"
+        },
+        {
+          selector: "typeParameter",
+          format: ["PascalCase"],
+          prefix: ["T"]
+        },
+        {
+          selector: "interface",
+          format: ["PascalCase"],
+        },
+        {
+          selector: "typeLike",
+          format: ["PascalCase"]
+        },
+        {
+          selector: "enumMember",
+          format: ["UPPER_CASE"]
         }
       ],
       "camelcase": ["error", {properties: "always"}],

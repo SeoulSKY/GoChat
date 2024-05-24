@@ -6,7 +6,7 @@ import {UserContext} from "../utils/contexts.ts";
 
 const styles = {
   navElement: "px-3 font-semibold hover:text-primary",
-}
+};
 
 export default function NavBar() {
   const [user] = useContext(UserContext);
