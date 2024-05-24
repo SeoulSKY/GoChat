@@ -9,6 +9,7 @@ import Alert from "react-bootstrap/Alert";
 import {SERVER_HOST} from "../constants.ts";
 import {paddingX} from "../styles.ts";
 import { format, isSameDay, isSameMinute, isYesterday, isThisWeek, isThisYear } from "date-fns";
+import { BsArrowUpCircleFill } from "react-icons/bs";
 
 // const socket = new WebSocket("ws" + SERVER_HOST + "/ws");
 
@@ -37,6 +38,16 @@ interface MessageBubbleProps {
   position: Position,
 }
 
+const bubbleBackgroundColor = {
+  [Alignment.LEFT]: "bg-gray-300",
+  [Alignment.RIGHT]: "bg-primary",
+};
+
+const bubbleTextColor = {
+  [Alignment.LEFT]: "text-black",
+  [Alignment.RIGHT]: "text-white",
+};
+
 function MessageBubble({message, alignment, position}: MessageBubbleProps) {
   const borderRadius = {
     [Position.TOP]: {
@@ -57,8 +68,8 @@ function MessageBubble({message, alignment, position}: MessageBubbleProps) {
     }
   };
 
-  const backgroundColor = alignment === Alignment.LEFT ? "bg-gray-300" : "bg-primary";
-  const textColor = alignment === Alignment.LEFT ? "text-black" : "text-white";
+  const backgroundColor = bubbleBackgroundColor[alignment];
+  const textColor = bubbleTextColor[alignment];
   const timestampColor = alignment === Alignment.LEFT ? "text-gray-500" : "text-gray-100";
 
   return (
@@ -114,7 +125,6 @@ interface MessageListProps {
 function MessageList({messages}: MessageListProps) {
   const now = new Date();
 
-  // eslint-disable-next-line no-unused-vars
   function splitMessages(messages: Message[], predicate: (left: Message, right: Message) => boolean): Message[][] {
     const groups: Message[][] = [];
     let currentGroup: Message[] = [messages[0]];
@@ -148,6 +158,10 @@ function MessageList({messages}: MessageListProps) {
     return format(date, "MMM d, yyyy");
   }
 
+  if (messages.length === 0) {
+    return <div>Start conversation</div>
+  }
+
   const messageGroupByDate = splitMessages(messages, (left, right) => !isSameDay(left.timestamp, right.timestamp))
     .map(group =>
       splitMessages(group, (left, right) => left.senderName !== right.senderName)
@@ -177,6 +191,8 @@ function MessageList({messages}: MessageListProps) {
 
 export default function ChatRoom() {
   const [messages, setMessages] = useState<Message[]>([]);
+  const [input, setInput] = useState("");
+  const [error, setError] = useState("");
 
   useEffect(() => {
     setMessages([
@@ -233,13 +249,39 @@ export default function ChatRoom() {
     ]);
   }, []);
 
-  const [error, setError] = useState("");
-
-  if (messages.length === 0) return <></>;
+  useEffect(() => {
+    window.scrollTo({top: document.body.scrollHeight, behavior: "smooth"});
+  }, [messages])
 
   return (
-    <div className={paddingX}>
-      <MessageList messages={messages} />
+    <div>
+      <div className={paddingX}>
+        <MessageList messages={messages}/>
+      </div>
+      <div className={`flex flex-row w-full sticky bottom-0 border-t border-gray-400 bg-white py-3 ${paddingX}`}>
+        <input
+          className={`${bubbleTextColor[Alignment.LEFT]} focus:outline-none text-lg w-full px-6 py-2 rounded-3xl placeholder:italic placeholder-gray-600 ${bubbleBackgroundColor[Alignment.LEFT]}`}
+          value={input}
+          onChange={(e) => setInput(e.target.value)}
+          placeholder={"Message"}
+        />
+        {input.trim() && <button
+          className={"ml-4"}
+          onClick={() => {
+            setMessages(values => [
+              ...values,
+              {
+                senderName: "SeoulSKY",
+                message: input,
+                timestamp: new Date(),
+              }
+            ]);
+            setInput("");
+          }}
+        >
+          <BsArrowUpCircleFill className={"text-4xl text-primary"} />
+        </button>}
+      </div>
     </div>
   );
 
@@ -282,8 +324,6 @@ export default function ChatRoom() {
   //   setError("Connection to go server has been closed");
   //   console.log(e.reason);
   // };
-
-  const [input, setInput] = useState("");
 
   // /**
   //    * Send a message to go server
