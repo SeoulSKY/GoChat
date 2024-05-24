@@ -2,14 +2,11 @@ package mongo
 
 import (
 	"context"
-	"log"
-	"main/models"
-	"os"
-
-	"github.com/joho/godotenv"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
+	"log"
+	"main/models"
 )
 
 // Mongo is a wrapper for the mongo database
@@ -21,11 +18,8 @@ type Mongo struct {
 var instance *Mongo
 
 func init() {
-	if err := godotenv.Load(); err != nil {
-		log.Fatal("Failed to load .env file", err)
-	}
 
-	client, err := mongo.NewClient(options.Client().ApplyURI(os.Getenv("MONGODB_HOST")))
+	client, err := mongo.NewClient(options.Client().ApplyURI("mongodb://mongoDB:27017"))
 	if err != nil {
 		log.Panic(err)
 	}

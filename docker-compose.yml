@@ -2,19 +2,19 @@ version: "3"
 
 services:
 
-  go-server:
-    build: go-server
-    container_name: go-server
+  chat-server:
+    build: chat-server
+    container_name: chat-server
     depends_on:
       - mongoDB
     ports:
-      - "5000:5000"
+      - "4000:4000"
 
   web-server:
     build: web-server
     container_name: web-server
-    # depends_on:
-    #   - go-server
+    depends_on:
+      - chat-server
     ports:
       - "3000:3000"
     volumes:
