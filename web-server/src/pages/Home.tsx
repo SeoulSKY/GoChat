@@ -1,4 +1,4 @@
-import {margin, marginX, marginY, paddingX} from "../styles.ts";
+import {marginY, paddingX} from "../styles.ts";
 
 import gochat from "../assets/gochat.png";
 import dataProtection from "../assets/dataProtection.png";

@@ -1,11 +1,5 @@
 import React, { useState, useEffect, useRef } from "react";
 import env from "react-dotenv";
-import InputGroup from "react-bootstrap/InputGroup";
-import FormControl from "react-bootstrap/FormControl";
-import Button from "react-bootstrap/Button";
-import Container from "react-bootstrap/Container";
-import Form from "react-bootstrap/Form";
-import Alert from "react-bootstrap/Alert";
 import {SERVER_HOST} from "../constants.ts";
 import {paddingX} from "../styles.ts";
 import { format, isSameDay, isSameMinute, isYesterday, isThisWeek, isThisYear } from "date-fns";
@@ -260,15 +254,16 @@ export default function ChatRoom() {
       </div>
       <div className={`flex flex-row w-full sticky bottom-0 border-t border-gray-400 bg-white py-3 ${paddingX}`}>
         <input
-          className={`${bubbleTextColor[Alignment.LEFT]} focus:outline-none text-lg w-full px-6 py-2 rounded-3xl placeholder:italic placeholder-gray-600 ${bubbleBackgroundColor[Alignment.LEFT]}`}
+          className={`${bubbleTextColor[Alignment.LEFT]} ${bubbleBackgroundColor[Alignment.LEFT]} focus:outline-none 
+          text-lg w-full px-6 py-2 rounded-3xl placeholder:italic placeholder-gray-600`}
           value={input}
           onChange={(e) => setInput(e.target.value)}
           placeholder={"Message"}
         />
         {input.trim() && <button
-          className={"ml-4"}
+          className={"ml-4 text-4xl text-primary"}
           onClick={() => {
-            setMessages(values => [
+            setMessages((values: Message[]) => [
               ...values,
               {
                 senderName: "SeoulSKY",
@@ -279,7 +274,7 @@ export default function ChatRoom() {
             setInput("");
           }}
         >
-          <BsArrowUpCircleFill className={"text-4xl text-primary"} />
+          <BsArrowUpCircleFill />
         </button>}
       </div>
     </div>

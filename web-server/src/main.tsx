@@ -22,10 +22,10 @@ const router = createBrowserRouter([
         path: "chat",
         element: <ChatRoom />,
       },
-      // {
-      //   path: "profile",
-      //   element: <Profile />,
-      // },
+      {
+        path: "profile",
+        element: <Profile />,
+      },
     ]
   },
 ]);

@@ -13,10 +13,12 @@ services:
   web-server:
     build: web-server
     container_name: web-server
-    depends_on:
-      - go-server
+    # depends_on:
+    #   - go-server
     ports:
-      - "8080:8080"
+      - "3000:3000"
+    volumes:
+      - ./web-server/logs:/app/logs
 
   mongoDB:
     image: mongo
