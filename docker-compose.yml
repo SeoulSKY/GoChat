@@ -6,9 +6,12 @@ services:
     build: chat-server
     container_name: chat-server
     depends_on:
-      - mongoDB
+      - mongo
     ports:
       - "4000:4000"
+    restart: always
+    volumes:
+      - ./chat-server/logs:/app/logs
 
   web-server:
     build: web-server
@@ -20,13 +23,11 @@ services:
     volumes:
       - ./web-server/logs:/app/logs
 
-  mongoDB:
+  mongo:
     image: mongo
     container_name: mongoDB
     ports:
       - "27017:27017"
+    restart: always
     volumes:
-      - mongo-data:/data/db
-
-volumes:
-  mongo-data:
+      -  ~/mongoDB:/data/db
