@@ -11,6 +11,9 @@ on:
 jobs:
   eslint:
     runs-on: ubuntu-latest
+    env:
+      ROOT_PATH: web-server
+
 
     steps:
       - name: Checkout
@@ -23,8 +26,10 @@ jobs:
 
       - name: Install dependencies
         run: |
+          cd $ROOT_PATH
           npm install
 
       - name: Run ESLint
         run: |
+          cd $ROOT_PATH
           npm run lint
