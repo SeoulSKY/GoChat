@@ -18,7 +18,7 @@ const NavBar = forwardRef((_props, ref: RefObject<HTMLElement>) =>{
     >
       <div className={"flex justify-start items-center"}>
         <Link to={"/"} className={"flex flex-row items-center py-2 pr-5"}>
-          <img src={logo} alt={APP_NAME} className={"h-16 aspect-auto pr-1"}/>
+          <img src={logo} alt={APP_NAME} className={"h-12 aspect-auto pr-3"}/>
           <p className={"font-bold text-4xl hover:text-primary"}>{APP_NAME}</p>
         </Link>
         {user && <Link to={"/chat"} className={styles.navElement}>Chat Room</Link>}
