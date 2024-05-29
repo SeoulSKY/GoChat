@@ -44,8 +44,8 @@ function Section({title, description, image, color, reversed}: SectionProps) {
   }
 
   const elements = [
-    <Text/>,
-    <Image/>
+    <Text key={"text"}/>,
+    <Image key={"image"}/>
   ];
 
   reversed && elements.reverse();

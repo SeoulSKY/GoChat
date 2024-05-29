@@ -1,8 +1,7 @@
 import {ChangeEvent, useContext, useState} from "react";
 import useWindowSize from "../hooks/useWindowSize.ts";
 import {useNavigate} from "react-router-dom";
-import {NavContext, UserContext} from "../utils/contexts.ts";
-import useSize from "../hooks/useSize.ts";
+import { UserContext} from "../utils/contexts.ts";
 import useNavSize from "../hooks/useNavSize.ts";
 
 interface InputProps {

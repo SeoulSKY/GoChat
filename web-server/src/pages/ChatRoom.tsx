@@ -80,7 +80,8 @@ function MessageBubble({message, alignment, type}: MessageBubbleProps) {
 
   return (
     <div
-      className={`inline-flex flex-col px-6 py-3 my-0.5 rounded-3xl ${backgroundColor} ${borderRadius[type][alignment]}`}
+      className={`inline-flex flex-col px-6 py-3 my-0.5 rounded-3xl 
+      ${backgroundColor} ${borderRadius[type][alignment]}`}
     >
       {[MessageBubbleType.TOP, MessageBubbleType.SINGLE].includes(type) && alignment === Alignment.LEFT &&
         <p className={"font-semibold text-primary text-sm"}>
@@ -120,7 +121,7 @@ function MessageGroup({messages, alignment}: MessageGroupProps) {
           type = MessageBubbleType.CENTER;
         }
 
-        return <MessageBubble message={message} alignment={alignment} type={type} />;
+        return <MessageBubble key={index} message={message} alignment={alignment} type={type} />;
       })}
     </div>
   );
@@ -180,14 +181,14 @@ function MessageList({messages}: MessageListProps) {
 
   return (
     <div>
-      {messages && messageGroupByDate.map((groupByDate) => {
+      {messages && messageGroupByDate.map((groupByDate, index) => {
         return (
-          <div className={"flex flex-col my-5"}>
+          <div key={index} className={"flex flex-col my-5"}>
             <div className={"self-center"}>{formatDateFromNow(groupByDate[0][0].timestamp)}</div>
             <div className={"flex flex-col my-2"}>
-              {groupByDate.map((group) => {
+              {groupByDate.map((group, index) => {
                 const alignment = group[0].senderName === user.name ? Alignment.RIGHT : Alignment.LEFT;
-                return <MessageGroup messages={group} alignment={alignment} />;
+                return <MessageGroup key={index} messages={group} alignment={alignment} />;
               })}
             </div>
           </div>
