@@ -7,6 +7,13 @@
     Say "Hello" to the diverse individuals in our seamless real-time conversational platform.
 </blockquote>
 
+## Screenshots
+
+### Chat Room
+
+<img src="https://github.com/SeoulSKY/GoChat/assets/48105703/c03988b8-9046-4f49-a158-9c081e97f54a">
+
+
 ## How to run
 This application requires `Docker` and `Docker compose`. Please install them first.
 * [Docker installation](https://www.docker.com/get-started)
