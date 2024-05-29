@@ -1,5 +1,11 @@
-# Go Chat
-![gochat](https://user-images.githubusercontent.com/48105703/147529163-f94ff76e-e984-471b-951e-31dbb70314ea.png)
+<div align="center">
+    <img width="250" src="https://github.com/SeoulSKY/GoChat/assets/48105703/7e81a793-4d9a-40ba-b529-603ff176eadc">
+    <h1>GoChat</h1>
+</div>
+
+<blockquote align="center">
+    Say "Hello" to the diverse individuals in our seamless real-time conversational platform.
+</blockquote>
 
 ## How to run
 This application requires `Docker` and `Docker compose`. Please install them first.
