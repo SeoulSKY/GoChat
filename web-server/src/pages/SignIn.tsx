@@ -3,6 +3,8 @@ import useWindowSize from "../hooks/useWindowSize.ts";
 import {useNavigate} from "react-router-dom";
 import { UserContext} from "../utils/contexts.ts";
 import useNavSize from "../hooks/useNavSize.ts";
+import {motion} from "framer-motion";
+import {pressable} from "../utils/motion.ts";
 
 interface InputProps {
   error?: string,
@@ -13,8 +15,11 @@ interface InputProps {
 function Input({error = "", className = "", ...props}: InputProps) {
   return (
     <>
-      <input {...props} className={`w-full focus:outline-none text-base px-2 py-2 rounded-lg placeholder-gray-600 
-      border-2 border-gray-500 focus:border-primary ${className}`} />
+      <motion.input
+        {...props}
+        {...pressable(0.05)}
+        className={`w-full focus:outline-none text-base px-2 py-2 rounded-lg placeholder-gray-600 border-2 
+        border-gray-500 focus:border-primary ${className}`} />
       {error && <p className={"text-base font-normal text-red-500 pl-2"}>{error}</p>}
     </>
   );
@@ -43,15 +48,16 @@ export default function SignIn() {
           onChange={(e: ChangeEvent<HTMLInputElement>) => setName(e.target.value)}
           className={"my-10"}
         />
-        <button
+        <motion.button
           className={"w-full font-semibold text-white px-3 py-3 bg-primary rounded-3xl"}
+          {...pressable()}
           disabled={disabled}
           onClick={() => {
             setDisabled(true);
             setUser({name});
             navigate("/");
           }}
-        >Log In</button>
+        >Log In</motion.button>
       </div>
     </div>
   );

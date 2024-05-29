@@ -3,6 +3,8 @@ import {ChangeEvent, useContext, useEffect, useState} from "react";
 import {useNavigate} from "react-router-dom";
 import {toast} from "react-toastify";
 import {UserContext} from "../utils/contexts.ts";
+import {motion} from "framer-motion";
+import {pressable} from "../utils/motion.ts";
 
 
 export default function Account() {
@@ -27,15 +29,17 @@ export default function Account() {
 
         <div className={"flex flex-row items-center m-5"}>
           <p className={"text-base pr-5"}>Name</p>
-          <input
+          <motion.input
             className={"w-full border-2 border-gray-400 rounded-lg p-2 focus:outline-none focus:border-primary"}
+            {...pressable(0.01)}
             value={name}
             onChange={(e: ChangeEvent<HTMLInputElement>) => setName(e.target.value)}/>
         </div>
 
         <div className={"flex justify-end p-5"}>
-          <button
+          <motion.button
             className={"text-base font-normal text-white rounded-3xl px-6 py-3 bg-primary"}
+            {...pressable()}
             onClick={() => {
               if (!name.trim()) {
                 toast.error("Name cannot be empty");
@@ -46,14 +50,15 @@ export default function Account() {
               toast.success(`Your name has been updated to ${name}`);
             }}
           >Update
-          </button>
+          </motion.button>
         </div>
       </div>
 
-      <button
+      <motion.button
         className={"text-base font-normal text-white rounded-3xl px-6 py-3 bg-red-500 mt-5"}
         onClick={() => setUser(null)}
-      >Sign Out</button>
+        {...pressable()}
+      >Sign Out</motion.button>
     </div>
   );
 }

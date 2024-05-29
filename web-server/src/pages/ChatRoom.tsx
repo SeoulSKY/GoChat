@@ -11,6 +11,8 @@ import useWindowSize from "../hooks/useWindowSize.ts";
 import useScroll from "../hooks/useScroll.ts";
 import {useNavigate} from "react-router-dom";
 import useNavSize from "../hooks/useNavSize.ts";
+import {motion} from "framer-motion";
+import {pressable} from "../utils/motion.ts";
 
 export interface Message {
   senderName: string,
@@ -295,20 +297,22 @@ export default function ChatRoom() {
       {isOverflow && scroll < 1 && <div
         className={"absolute mb-5 z-50 flex justify-center w-full"}
         style={{bottom: `${inputHeight}px`}}>
-        <button
+        <motion.button
           className={"text-xl bg-gray-400 text-white rounded-full p-3"}
+          {...pressable()}
           onClick={scrollToBottom}
         >
           <BsChevronDown />
-        </button>
+        </motion.button>
       </div>}
       <div
         ref={inputRef}
         className={`absolute bottom-0 flex flex-row w-full border-t border-gray-400 bg-white py-3 z-50 ${paddingX}`}
       >
-        <input
+        <motion.input
           className={`${bubbleTextColor[Alignment.LEFT]} ${bubbleBackgroundColor[Alignment.LEFT]} focus:outline-none 
           text-lg w-full px-6 py-2 rounded-3xl placeholder:italic placeholder-gray-600`}
+          {...pressable(0.01)}
           value={input}
           onChange={(e) => setInput(e.target.value)}
           placeholder={"Message"}
@@ -318,13 +322,14 @@ export default function ChatRoom() {
             }
           }}
         />
-        {input.trim() && <button
+        {input.trim() && <motion.button
           className={"ml-4 text-4xl text-primary disabled:opacity-50"}
+          {...pressable()}
           disabled={readyState !== ReadyState.OPEN}
           onClick={onSend}
         >
           <BsArrowUpCircleFill/>
-        </button>}
+        </motion.button>}
       </div>
     </div>
   );
