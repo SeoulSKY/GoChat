@@ -2,7 +2,7 @@ package main
 
 import (
 	"log"
-	"main/message"
+	"main/models"
 	"strconv"
 )
 
@@ -10,7 +10,7 @@ import (
 type ClientManager struct {
 	clients map[int64]*Client
 
-	broadcast chan *message.Message
+	broadcast chan *models.Message
 
 	add chan *Client
 
@@ -21,7 +21,7 @@ type ClientManager struct {
 func NewClientManager() *ClientManager {
 	return &ClientManager{
 		make(map[int64]*Client),
-		make(chan *message.Message),
+		make(chan *models.Message),
 		make(chan *Client),
 		make(chan *Client),
 	}

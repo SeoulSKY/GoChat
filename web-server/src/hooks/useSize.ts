@@ -34,9 +34,9 @@ export default function useSize(target: RefObject<HTMLElement>): Size {
         return;
       }
 
-      resizeObserver.unobserve(target.current);
-    }
-  }, [target])
+      resizeObserver.disconnect();
+    };
+  }, [target]);
 
   return {width, height};
 }

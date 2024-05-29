@@ -6,6 +6,9 @@ import openSource from "../assets/openSource.jpg";
 import softwareEngineer from "../assets/softwareEngineer.jpg";
 
 import {APP_NAME} from "../constants.ts";
+import {UserContext} from "../utils/contexts.ts";
+import {useContext} from "react";
+import {useNavigate} from "react-router-dom";
 
 const styles = {
   title: "font-bold text-4xl py-3",
@@ -24,19 +27,19 @@ function Section({title, description, image, color, reversed}: SectionProps) {
   function Text() {
     return (
       <div className={`${reversed ? "ml-10" : "mr-10"} max-w-lg`}>
-        <h1 className={styles.title}>{title}</h1>
-        <h3 className={styles.description}>{description}</h3>
+        <section className={styles.title}>{title}</section>
+        <article className={styles.description}>{description}</article>
       </div>
     );
   }
 
   function Image() {
     return (
-      <div className={`flex justify-center item-center rounded-3xl w-full aspect-[4/3] ${color}`}>
+      <aside className={`flex justify-center item-center rounded-3xl w-full aspect-[4/3] ${color}`}>
         <div className={"flex justify-center items-center"}>
           <img src={image} alt="image" className={"object-cover h-2/3 rounded-3xl"}/>
         </div>
-      </div>
+      </aside>
     );
   }
 
@@ -55,17 +58,24 @@ function Section({title, description, image, color, reversed}: SectionProps) {
 }
 
 export default function Home() {
+  const [user] = useContext(UserContext);
+
+  const navigate = useNavigate();
+
   return (
     <div className={"flex flex-col justify-center"}>
 
-      <div className={`flex flex-row bg-primary items-center ${paddingX}`}>
+      <div className={`flex flex-row bg-blue-300 items-center ${paddingX}`}>
         <div className={"flex-0 flex-col"}>
-          <h1 className={styles.title}>Connect Instantly</h1>
-          <h3 className={styles.description}>
+          <section className={styles.title}>Connect Instantly</section>
+          <article className={styles.description}>
             Say "Hello" to the diverse individuals in our seamless real-time conversational platform.
-          </h3>
-          <button className={`bg-white rounded-lg ${marginY}`}>
-            <p className={"px-6 py-3 text-primary text-xl font-bold"}>Get Started</p>
+          </article>
+          <button
+            className={`bg-white rounded-lg ${marginY}`}
+            onClick={() => navigate(user ? "/chat" : "/signin")}
+          >
+            <p className={"px-6 py-3 text-primary text-xl font-bold"}>{user ? "Continue" : "Let's Go"}</p>
           </button>
         </div>
         <img src={gochat} alt="gochat" className={"w-2/3 rounded-lg ml-6 my-12"}/>

@@ -2,12 +2,15 @@ import React, {useContext, useEffect, useRef, useState} from "react";
 import {SERVER_HOST} from "../constants.ts";
 import {paddingX} from "../styles.ts";
 import {format, isSameDay, isSameMinute, isThisWeek, isThisYear, isToday, isYesterday} from "date-fns";
-import {BsArrowUpCircleFill} from "react-icons/bs";
+import {BsArrowUpCircleFill, BsChevronDown} from "react-icons/bs";
 import useWebSocket, {ReadyState} from "react-use-websocket";
 import {toast} from "react-toastify";
 import useSize from "../hooks/useSize.ts";
-import {NavContext} from "../utils/contexts.ts";
+import {UserContext} from "../utils/contexts.ts";
 import useWindowSize from "../hooks/useWindowSize.ts";
+import useScroll from "../hooks/useScroll.ts";
+import {useNavigate} from "react-router-dom";
+import useNavSize from "../hooks/useNavSize.ts";
 
 export interface Message {
   senderName: string,
@@ -23,16 +26,12 @@ function parseMessage(json: object): Message {
   };
 }
 
-function scrollToBottom() {
-  window.scrollTo({top: document.body.scrollHeight, behavior: "smooth"});
-}
-
 enum Alignment {
   LEFT,
   RIGHT,
 }
 
-enum Position {
+enum MessageBubbleType {
   TOP,
   CENTER,
   BOTTOM,
@@ -42,7 +41,7 @@ enum Position {
 interface MessageBubbleProps {
   message: Message,
   alignment: Alignment,
-  position: Position,
+  type: MessageBubbleType,
 }
 
 const bubbleBackgroundColor = {
@@ -55,21 +54,21 @@ const bubbleTextColor = {
   [Alignment.RIGHT]: "text-white",
 };
 
-function MessageBubble({message, alignment, position}: MessageBubbleProps) {
+function MessageBubble({message, alignment, type}: MessageBubbleProps) {
   const borderRadius = {
-    [Position.TOP]: {
+    [MessageBubbleType.TOP]: {
       [Alignment.LEFT]: "rounded-bl-sm",
       [Alignment.RIGHT]: "rounded-br-sm",
     },
-    [Position.CENTER]: {
+    [MessageBubbleType.CENTER]: {
       [Alignment.LEFT]: "rounded-l-sm",
       [Alignment.RIGHT]: "rounded-r-sm",
     },
-    [Position.BOTTOM]: {
+    [MessageBubbleType.BOTTOM]: {
       [Alignment.LEFT]: "rounded-tl-sm",
       [Alignment.RIGHT]: "rounded-tr-sm",
     },
-    [Position.SINGLE]: {
+    [MessageBubbleType.SINGLE]: {
       [Alignment.LEFT]: "",
       [Alignment.RIGHT]: "",
     }
@@ -81,15 +80,15 @@ function MessageBubble({message, alignment, position}: MessageBubbleProps) {
 
   return (
     <div
-      className={`flex flex-col px-6 py-3 my-1 rounded-3xl ${backgroundColor} ${borderRadius[position][alignment]}`}
+      className={`inline-flex flex-col px-6 py-3 my-0.5 rounded-3xl ${backgroundColor} ${borderRadius[type][alignment]}`}
     >
-      {[Position.TOP, Position.SINGLE].includes(position) && alignment === Alignment.LEFT &&
+      {[MessageBubbleType.TOP, MessageBubbleType.SINGLE].includes(type) && alignment === Alignment.LEFT &&
         <p className={"font-semibold text-primary text-sm"}>
           {message.senderName}
         </p>
       }
       <p className={`${textColor} text-lg break-words`}>{message.text}</p>
-      {[Position.BOTTOM, Position.SINGLE].includes(position) &&
+      {[MessageBubbleType.BOTTOM, MessageBubbleType.SINGLE].includes(type) &&
         <p
           className={`${timestampColor} self-end text-xs`}>
           {format(message.timestamp, "h:mm a")}
@@ -106,20 +105,22 @@ interface MessageGroupProps {
 
 function MessageGroup({messages, alignment}: MessageGroupProps) {
   return (
-    <div className={`min-w-36 max-w-xl ${alignment === Alignment.LEFT ? "self-start" : "self-end"}`}>
+    <div className={`min-w-36 max-w-xl my-1
+    ${alignment === Alignment.LEFT ? "self-start text-left" : "self-end text-right"}`}
+    >
       {messages.map((message, index) => {
-        let position: Position;
+        let type: MessageBubbleType;
         if (messages.length === 1) {
-          position = Position.SINGLE;
+          type = MessageBubbleType.SINGLE;
         } else if (index === 0) {
-          position = Position.TOP;
+          type = MessageBubbleType.TOP;
         } else if (index === messages.length - 1) {
-          position = Position.BOTTOM;
+          type = MessageBubbleType.BOTTOM;
         } else {
-          position = Position.CENTER;
+          type = MessageBubbleType.CENTER;
         }
 
-        return <MessageBubble message={message} alignment={alignment} position={position} />;
+        return <MessageBubble message={message} alignment={alignment} type={type} />;
       })}
     </div>
   );
@@ -130,6 +131,8 @@ interface MessageListProps {
 }
 
 function MessageList({messages}: MessageListProps) {
+  const [user] = useContext(UserContext);
+
   function splitMessages(messages: Message[], predicate: (left: Message, right: Message) => boolean): Message[][] {
     const groups: Message[][] = [];
     let currentGroup: Message[] = [messages[0]];
@@ -164,7 +167,7 @@ function MessageList({messages}: MessageListProps) {
   }
 
   if (messages.length === 0) {
-    return <p className={"text-4xl"}>Start conversation</p>
+    return <p className={"flex h-full text-4xl justify-center items-center"}>Start Conversation</p>;
   }
 
   const messageGroupByDate = splitMessages(messages, (left, right) => !isSameDay(left.timestamp, right.timestamp))
@@ -183,7 +186,7 @@ function MessageList({messages}: MessageListProps) {
             <div className={"self-center"}>{formatDateFromNow(groupByDate[0][0].timestamp)}</div>
             <div className={"flex flex-col my-2"}>
               {groupByDate.map((group) => {
-                const alignment = group[0].senderName === "SeoulSKY" ? Alignment.RIGHT : Alignment.LEFT;
+                const alignment = group[0].senderName === user.name ? Alignment.RIGHT : Alignment.LEFT;
                 return <MessageGroup messages={group} alignment={alignment} />;
               })}
             </div>
@@ -196,23 +199,41 @@ function MessageList({messages}: MessageListProps) {
 
 
 export default function ChatRoom() {
+  const navHeight = useNavSize().height;
   const windowHeight = useWindowSize().height;
 
-  const navRef = useContext(NavContext);
+  const [user] = useContext(UserContext);
+
+  const listRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
+  const scrollRef = useRef<HTMLDivElement>(null);
 
   const { sendMessage, lastMessage, readyState } = useWebSocket(SERVER_HOST.replace("http", "ws") + "/api/ws");
   const [messages, setMessages] = useState<Message[]>([]);
   const [input, setInput] = useState("");
-  const navHeight = useSize(navRef).height;
+  const [isOverflow, setIsOverflow] = useState(false);
   const inputHeight = useSize(inputRef).height;
+  const scroll = useScroll(listRef);
+
+  const navigate = useNavigate();
+
+  if (!user) {
+    navigate("/signin");
+  }
+
+  function scrollToBottom() {
+    if (!scrollRef.current) {
+      return;
+    }
+    scrollRef.current.scrollIntoView({behavior: "smooth"});
+  }
 
   useEffect(() => {
     (async () => {
       try {
         const response = await fetch(SERVER_HOST + "/api/chat");
         if (!response.ok) {
-          toast.error("Could not load messages. Please try again later.")
+          toast.error("Could not load messages. Please try again later.");
           console.log(response.status, response.statusText);
           return;
         }
@@ -221,7 +242,7 @@ export default function ChatRoom() {
 
         setMessages(json.map(parseMessage));
       } catch (e) {
-        toast.error("Could not load messages. Please try again later.")
+        toast.error("Could not load messages. Please try again later.");
         console.error(e);
       }
     })();
@@ -244,15 +265,42 @@ export default function ChatRoom() {
     }
   }, [readyState]);
 
-  useEffect(scrollToBottom, [messages]);
+  useEffect(() => {
+    scrollToBottom();
+    setIsOverflow(listRef.current.scrollHeight > listRef.current.clientHeight);
+  }, [messages]);
+
+  function onSend() {
+    if (!input.trim()) {
+      return;
+    }
+
+    sendMessage(JSON.stringify({
+      senderName: user.name,
+      text: input,
+    }));
+    setInput("");
+  }
 
   return (
     <div className={"flex flex-col"}>
       <div
-        className={`flex overflow-scroll justify-center items-center ${paddingX}`}
+        ref={listRef}
+        className={`overflow-scroll ${paddingX}`}
         style={{height: windowHeight - navHeight - inputHeight}}>
-          <MessageList messages={messages} />
+        <MessageList messages={messages}/>
+        <div ref={scrollRef}></div>
       </div>
+      {isOverflow && scroll < 1 && <div
+        className={"absolute mb-5 z-50 flex justify-center w-full"}
+        style={{bottom: `${inputHeight}px`}}>
+        <button
+          className={"text-xl bg-gray-400 text-white rounded-full p-3"}
+          onClick={scrollToBottom}
+        >
+          <BsChevronDown />
+        </button>
+      </div>}
       <div
         ref={inputRef}
         className={`absolute bottom-0 flex flex-row w-full border-t border-gray-400 bg-white py-3 z-50 ${paddingX}`}
@@ -263,18 +311,16 @@ export default function ChatRoom() {
           value={input}
           onChange={(e) => setInput(e.target.value)}
           placeholder={"Message"}
+          onKeyDown={(e) => {
+            if (e.key === "Enter" && !e.shiftKey) {
+              onSend();
+            }
+          }}
         />
         {input.trim() && <button
           className={"ml-4 text-4xl text-primary disabled:opacity-50"}
           disabled={readyState !== ReadyState.OPEN}
-          onClick={() => {
-            sendMessage(JSON.stringify({
-              senderName: "SeoulSKY",
-              text: input,
-              timestamp: new Date().toISOString(),
-            }));
-            setInput("");
-          }}
+          onClick={onSend}
         >
           <BsArrowUpCircleFill/>
         </button>}

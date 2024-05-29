@@ -27,7 +27,7 @@ export default tseslint.config(
       quotes: ["error", "double"],
       "@stylistic/jsx-quotes": ["error", "prefer-double"],
       indent: ["error", 2],
-      "no-unused-vars": [
+      "@typescript-eslint/no-unused-vars": [
         "error",
         {
           argsIgnorePattern: "^_",

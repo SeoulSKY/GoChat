@@ -4,12 +4,13 @@ import "./index.css";
 import {createBrowserRouter, Outlet, RouterProvider} from "react-router-dom";
 import Home from "./pages/Home.tsx";
 import ChatRoom from "./pages/ChatRoom.tsx";
-import Profile from "./pages/Profile.tsx";
+import Account from "./pages/Account.tsx";
 import NavBar from "./components/NavBar.tsx";
 import {NavContext, UserContext} from "./utils/contexts.ts";
 import {getUser, setUser as updateUser, User} from "./utils/user.ts";
 import {Bounce, ToastContainer} from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import SignIn from "./pages/SignIn.tsx";
 
 const router = createBrowserRouter([
   {
@@ -25,9 +26,13 @@ const router = createBrowserRouter([
         element: <ChatRoom />,
       },
       {
-        path: "profile",
-        element: <Profile />,
+        path: "account",
+        element: <Account />,
       },
+      {
+        path: "signin",
+        element: <SignIn />,
+      }
     ]
   },
 ]);

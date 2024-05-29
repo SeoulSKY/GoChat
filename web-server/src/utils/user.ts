@@ -26,3 +26,10 @@ export function getUser(): User {
 export function setUser(user: User) {
   Cookies.set(key, JSON.stringify(user));
 }
+
+/**
+ * Remove the user from the cookie
+ */
+export function removeUser() {
+  Cookies.remove(key);
+}

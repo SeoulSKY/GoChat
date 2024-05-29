@@ -2,11 +2,13 @@ package mongo
 
 import (
 	"context"
+	"fmt"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
 	"log"
-	"main/message"
+	"main/models"
+	"os"
 )
 
 // Mongo is a wrapper for the mongo database
@@ -18,8 +20,14 @@ type Mongo struct {
 var instance *Mongo
 
 func init() {
+	var host string
+	if _, ok := os.LookupEnv("DOCKER"); ok {
+		host = "mongo"
+	} else {
+		host = "localhost"
+	}
 
-	client, err := mongo.NewClient(options.Client().ApplyURI("mongodb://mongo:27017"))
+	client, err := mongo.NewClient(options.Client().ApplyURI(fmt.Sprintf("mongodb://%s:27017", host)))
 	if err != nil {
 		log.Panic(err)
 	}
@@ -30,7 +38,7 @@ func init() {
 
 	instance = &Mongo{
 		client,
-		client.Database("chat").Collection("chat"),
+		client.Database("GoChat").Collection("chat"),
 	}
 }
 
@@ -40,7 +48,7 @@ func GetInstance() *Mongo {
 }
 
 // Insert inserts the given chat to the database
-func (m *Mongo) Insert(message *message.Message) {
+func (m *Mongo) Insert(message *models.Message) {
 	_, err := m.chat.InsertOne(context.Background(), message)
 	if err != nil {
 		log.Panic(err)
@@ -48,13 +56,13 @@ func (m *Mongo) Insert(message *message.Message) {
 }
 
 // Find finds existing chats from the database
-func (m *Mongo) Find() *[]message.Message {
+func (m *Mongo) Find() *[]models.Message {
 	cursor, err := m.chat.Find(context.Background(), bson.D{})
 	if err != nil {
 		log.Panic(err)
 	}
 
-	messages := make([]message.Message, 0)
+	messages := make([]models.Message, 0)
 	if err := cursor.All(context.Background(), &messages); err != nil {
 		log.Panic(err)
 	}

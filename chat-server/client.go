@@ -3,7 +3,7 @@ package main
 import (
 	"github.com/gorilla/websocket"
 	"log"
-	"main/message"
+	"main/models"
 	"main/mongo"
 	"time"
 )
@@ -12,7 +12,7 @@ import (
 type Client struct {
 	id      int64
 	conn    *websocket.Conn
-	send    chan *message.Message
+	send    chan *models.Message
 	manager *ClientManager
 }
 
@@ -21,7 +21,7 @@ func NewClient(id int64, conn *websocket.Conn, manager *ClientManager) *Client {
 	return &Client{
 		id,
 		conn,
-		make(chan *message.Message),
+		make(chan *models.Message),
 		manager,
 	}
 }
@@ -30,12 +30,13 @@ func NewClient(id int64, conn *websocket.Conn, manager *ClientManager) *Client {
 func (c *Client) start() {
 	c.manager.add <- c
 
-	// read message from the client
+	// read models from the client
 	go func() {
 		for {
-			message := new(message.Message)
+			message := new(models.Message)
 			if err := c.conn.ReadJSON(message); err != nil {
-				if websocket.IsUnexpectedCloseError(err, websocket.CloseGoingAway, websocket.CloseAbnormalClosure) {
+				if websocket.IsUnexpectedCloseError(err, websocket.CloseNoStatusReceived, websocket.CloseGoingAway,
+					websocket.CloseAbnormalClosure) {
 					log.Println(err)
 				}
 
@@ -44,16 +45,15 @@ func (c *Client) start() {
 			}
 
 			message.Timestamp = time.Now()
-			log.Println(message.SenderName, "says:", message.Text)
 
-			// add the message to the database
+			// add the models to the database
 			mongo.GetInstance().Insert(message)
 
 			c.manager.broadcast <- message
 		}
 	}()
 
-	// write message to the client
+	// write models to the client
 	go func() {
 		for {
 			select {

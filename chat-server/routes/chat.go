@@ -3,7 +3,7 @@ package routes
 import (
 	"encoding/json"
 	"log"
-	"main/message"
+	"main/models"
 	"main/mongo"
 	"net/http"
 )
@@ -34,7 +34,7 @@ func get(w http.ResponseWriter, r *http.Request) {
 }
 
 func post(w http.ResponseWriter, r *http.Request) {
-	chat := new(message.Message)
+	chat := new(models.Message)
 	if err := json.NewDecoder(r.Body).Decode(chat); err != nil {
 		log.Panic(err)
 	}
