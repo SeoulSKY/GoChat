@@ -1,7 +1,6 @@
 import {useEffect, useState} from "react";
 import {Size} from "./index.ts";
 
-
 /**
  * Get the size of the window without scrolling
  * @returns The size of the window without scrolling

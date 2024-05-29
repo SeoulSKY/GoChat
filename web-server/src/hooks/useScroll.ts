@@ -1,5 +1,10 @@
 import {RefObject, useEffect, useState} from "react";
 
+/**
+ * Get the vertical scroll value of the target element
+ * @param ref - The target element
+ * @returns The vertical scroll value of the target element
+ */
 export default function useScroll(ref: RefObject<HTMLElement>) {
   const [scroll, setScroll] = useState(0);
 

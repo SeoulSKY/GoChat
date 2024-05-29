@@ -2,6 +2,11 @@ import {MotionProps} from "framer-motion";
 
 type Direction = "left" | "right" | "up" | "down";
 
+/**
+ * Pressable animation
+ * @param amount - The amount to press
+ * @returns The motion props
+ */
 export function pressable(amount = 0.1): MotionProps {
   return {
     whileHover: { scale: 1 + amount },
@@ -9,6 +14,11 @@ export function pressable(amount = 0.1): MotionProps {
   };
 }
 
+/**
+ * Title animation
+ * @param amount - The amount to move
+ * @returns The motion props
+ */
 export function title(amount = 50): MotionProps {
   return {
     initial: "hidden",
@@ -31,6 +41,12 @@ export function title(amount = 50): MotionProps {
   };
 }
 
+/**
+ * Slide in animation
+ * @param direction - The direction to slide in
+ * @param amount - The amount to slide in
+ * @returns The motion props
+ */
 export function slideIn(direction: Direction, amount = 50): MotionProps {
   return {
     initial: "hidden",
@@ -44,6 +60,7 @@ export function slideIn(direction: Direction, amount = 50): MotionProps {
       },
       visible: {
         x: 0,
+        y: 0,
         opacity: 1,
         transition: {
           type: "spring",
