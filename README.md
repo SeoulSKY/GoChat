@@ -29,7 +29,7 @@ This application requires `Docker` and `Docker compose`. Please install them fir
 * [Docker compose installation](https://docs.docker.com/compose/install/)
 
 To run the app, use the following command:
-```
+```bash
 # For Production
 docker-compose pull && docker-compose up -d
 
