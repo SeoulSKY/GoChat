@@ -31,10 +31,10 @@ This application requires `Docker` and `Docker compose`. Please install them fir
 To run the app, use the following command:
 ```bash
 # For Production
-docker-compose pull && docker-compose up -d
+docker compose pull && docker compose up -d
 
 # For Development
-docker-compose -f docker-compose-dev.yml up --build -d
+docker compose -f docker-compose-dev.yml up --build -d
 ```
 When it is ready, visit [here](http://localhost:8080)
 
