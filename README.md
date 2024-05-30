@@ -16,19 +16,18 @@
 
 ### Home
 
-![](https://github.com/SeoulSKY/GoChat/blob/main/assets/home.gif)
+![home](https://github.com/SeoulSKY/GoChat/blob/main/assets/home.gif)
 
 ### Chat Room
 
-![](https://github.com/SeoulSKY/GoChat/assets/48105703/c03988b8-9046-4f49-a158-9c081e97f54a)
+![chatroom](https://github.com/SeoulSKY/GoChat/assets/48105703/c03988b8-9046-4f49-a158-9c081e97f54a)
 
-## How to run
+## How to Set up and Run
 
-This application requires `Docker` and `Docker compose`. Please install them first.
-* [Docker installation](https://www.docker.com/get-started)
-* [Docker compose installation](https://docs.docker.com/compose/install/)
+### Running with [Docker](https://www.docker.com/get-started)
 
-To run the app, use the following command:
+Run the following command
+
 ```bash
 # For Production
 docker compose pull && docker compose up -d
@@ -36,7 +35,8 @@ docker compose pull && docker compose up -d
 # For Development
 docker compose -f docker-compose-dev.yml up --build -d
 ```
-When it is ready, visit [here](http://localhost:8080)
+
+* When it is ready, visit [here](http://localhost:3000)
 
 ## Architecture
 
