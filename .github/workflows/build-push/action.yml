@@ -40,7 +40,7 @@ runs:
   - name: Build Docker image and push ${{ inputs.imagename }}
     uses: docker/build-push-action@v4
     with:
-      file: ${{ inputs.context }}/Dockerfile
+      context: ${{ inputs.context }}
       platforms: linux/amd64,linux/arm64/v8
       push: true
       tags: ${{ steps.meta.outputs.tags }}
