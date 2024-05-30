@@ -1,0 +1,35 @@
+name: Build and Push Docker Images
+
+on:
+  push:
+    tags:
+      - v*
+
+jobs:
+  chat-server:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: Build chat server
+        uses: ./.github/workflows/build-push
+        with:
+          context: chat-server
+          imagename: gochat
+          username: ${{ github.repository_owner }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+  web-server:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: Build and push web server
+        uses: ./.github/workflows/build-push
+        with:
+          context: web-server
+          imagename: gochat-web
+          username: ${{ github.repository_owner }}
+          password: ${{ secrets.GITHUB_TOKEN }}
