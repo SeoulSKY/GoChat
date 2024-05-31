@@ -12,6 +12,8 @@
     <img src="https://github.com/SeoulSKY/GoChat/actions/workflows/eslint.yml/badge.svg" alt="eslint">
 </div>
 
+[Click here for demo](https://gochat.seoulsky.org)
+
 ## Overview
 
 ### Home
