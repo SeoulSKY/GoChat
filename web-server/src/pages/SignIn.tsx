@@ -37,6 +37,12 @@ export default function SignIn() {
     navigate("/");
   }
 
+  function onClick() {
+    setDisabled(true);
+    setUser({name});
+    navigate("/");
+  }
+
   return (
     <div className={"flex justify-center items-center"} style={{height: height}}>
       <div className={"w-100 border-2 rounded-xl p-6"}>
@@ -46,17 +52,14 @@ export default function SignIn() {
           value={name}
           maxLength={20}
           onChange={(e: ChangeEvent<HTMLInputElement>) => setName(e.target.value)}
+          onKeyPress={(e: KeyboardEvent) => e.key === "Enter" && onClick()}
           className={"my-10"}
         />
         <motion.button
           className={"w-full font-semibold text-white px-3 py-3 bg-primary rounded-3xl"}
           {...pressable()}
           disabled={disabled}
-          onClick={() => {
-            setDisabled(true);
-            setUser({name});
-            navigate("/");
-          }}
+          onClick={onClick}
         >Log In</motion.button>
       </div>
     </div>

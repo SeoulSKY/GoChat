@@ -211,7 +211,7 @@ export default function ChatRoom() {
   const inputRef = useRef<HTMLInputElement>(null);
   const scrollRef = useRef<HTMLDivElement>(null);
 
-  const { sendMessage, lastMessage, readyState } = useWebSocket(SERVER_HOST.replace("http", "ws") + "/api/ws");
+  const { sendMessage, lastMessage, readyState } = useWebSocket(SERVER_HOST.replace(/^https?:/, "ws") + "ws");
   const [messages, setMessages] = useState<Message[]>([]);
   const [input, setInput] = useState("");
   const [isOverflow, setIsOverflow] = useState(false);
@@ -234,7 +234,7 @@ export default function ChatRoom() {
   useEffect(() => {
     (async () => {
       try {
-        const response = await fetch(SERVER_HOST + "/api/chat");
+        const response = await fetch(SERVER_HOST + "chat");
         if (!response.ok) {
           toast.error("Could not load messages. Please try again later.");
           console.log(response.status, response.statusText);
