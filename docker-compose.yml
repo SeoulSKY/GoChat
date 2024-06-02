@@ -22,7 +22,7 @@ services:
       - ./web-server/logs:/app/logs
 
   mongo:
-    image: mongo
+    image: mongo:7.0.11
     container_name: mongo
     ports:
       - "27017:27017"
