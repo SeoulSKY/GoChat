@@ -9,6 +9,9 @@ inputs:
     required: true
   password:
     required: true
+  build-args:
+    required: false
+    default: ""
 
 runs:
   using: composite
@@ -45,3 +48,4 @@ runs:
       push: true
       tags: ${{ steps.meta.outputs.tags }}
       labels: ${{ steps.meta.outputs.labels }}
+      build-args: ${{ inputs.build-args }}

@@ -1,5 +1,5 @@
 import React, {useContext, useEffect, useRef, useState} from "react";
-import {SERVER_HOST} from "../constants.ts";
+import {isProd, SERVER_HOST} from "../constants.ts";
 import {paddingX} from "../styles.ts";
 import {format, isSameDay, isSameMinute, isThisWeek, isThisYear, isToday, isYesterday} from "date-fns";
 import {BsArrowUpCircleFill, BsChevronDown} from "react-icons/bs";
@@ -212,7 +212,7 @@ export default function ChatRoom() {
   const scrollRef = useRef<HTMLDivElement>(null);
 
   const { sendMessage, lastMessage, readyState } = useWebSocket(
-    SERVER_HOST.replace(/^https?/, import.meta.env.VITE_APP_PROD ? "wss" : "ws") + "ws");
+    SERVER_HOST.replace(/^https?/, isProd ? "wss" : "ws") + "ws");
   const [messages, setMessages] = useState<Message[]>([]);
   const [input, setInput] = useState("");
   const [isOverflow, setIsOverflow] = useState(false);

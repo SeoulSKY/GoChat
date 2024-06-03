@@ -12,7 +12,10 @@ services:
       - ./chat-server/logs:/app/logs
 
   web-server:
-    build: web-server
+    build:
+      context: web-server
+      args:
+        - NODE_ENV=development
     container_name: web-server
     depends_on:
       - chat-server
