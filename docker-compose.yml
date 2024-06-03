@@ -16,6 +16,8 @@ services:
     container_name: web-server
     depends_on:
       - chat-server
+    environment:
+      - VITE_APP_PROD=1
     ports:
       - "3000:3000"
     volumes:

@@ -211,7 +211,8 @@ export default function ChatRoom() {
   const inputRef = useRef<HTMLInputElement>(null);
   const scrollRef = useRef<HTMLDivElement>(null);
 
-  const { sendMessage, lastMessage, readyState } = useWebSocket(SERVER_HOST.replace(/^https?:/, "ws") + "ws");
+  const { sendMessage, lastMessage, readyState } = useWebSocket(
+    SERVER_HOST.replace(/^https?/, import.meta.env.VITE_APP_PROD ? "wss" : "ws") + "ws");
   const [messages, setMessages] = useState<Message[]>([]);
   const [input, setInput] = useState("");
   const [isOverflow, setIsOverflow] = useState(false);
