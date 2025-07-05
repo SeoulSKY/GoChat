@@ -46,7 +46,7 @@ func main() {
 	routes.AddRoutes(router)
 
 	headersOk := handlers.AllowedHeaders([]string{"X-Requested-With"})
-	originsOk := handlers.AllowedOrigins([]string{"http://localhost:5173", "http://localhost:3000", "https://gochat.seoulsky.org"})
+	originsOk := handlers.AllowedOrigins([]string{"http://localhost:5173", "http://localhost:3000", "https://gochat.seoulsky.dev"})
 	methodsOk := handlers.AllowedMethods([]string{"GET", "POST", "PUT", "DELETE"})
 
 	log.Printf("Running at localhost:%d\n", PORT)
